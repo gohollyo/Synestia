@@ -1,6 +1,7 @@
 ### LOAD MODULES
 import numpy as np
 import struct
+G=6.674e-11 #SI
 #from scipy.interpolate import griddata #hydrostruct
 """Classes and functions for accessing and manipulating tabulated EOS data."""
 ### Module for accessing and manipulating tabulated EOS data
@@ -843,6 +844,7 @@ class Snapshot:
         #self.dt = 0
         #self.vapfrac = 0
         self.J2Ma2 = 0
+        self.g = 0
         self.ind_outer_mid_spl = 0
         self.pmidfit = 0
         self.rhomidfit = 0,0,0
@@ -960,6 +962,13 @@ class Snapshot:
         radius2 = np.add(self.rxy,np.power(self.z,2)) #m2
         self.rxy = np.sqrt(self.rxy) #m
         self.J2Ma2 = -np.sum(0.5*np.multiply(self.m,radius2)*(3.0*np.divide(np.power(self.z,2),radius2) - 1.0)) #kg m2
+        self.g = np.zeros((self.N, 3))
+        self.g_x = self.g.T[0]
+        self.g_y = self.g.T[1]
+        self.g_z = self.g.T[2]
+        self.g_x = (G*np.sum(self.m)*self.x/((np.sqrt(self.rxy**2 + self.z**2))**3)) - (3.*G*self.J2Ma2*((self.rxy**2 + self.z**2)**-2.5)*self.x*(2.5*((self.z**2)/(self.rxy**2 + self.z**2)) - 1.5))
+        self.g_y = (G*np.sum(self.m)*self.y/((np.sqrt(self.rxy**2 + self.z**2))**3)) - (3.*G*self.J2Ma2*((self.rxy**2 + self.z**2)**-2.5)*self.y*(2.5*((self.z**2)/(self.rxy**2 + self.z**2)) - 1.5))
+        self.g_z = (G*np.sum(self.m)*self.z/((np.sqrt(self.rxy**2 + self.z**2))**3)) - (3.*G*self.J2Ma2*((self.rxy**2 + self.z**2)**-2.5)*self.z*(2.5*((self.z**2)/(self.rxy**2 + self.z**2)) - 1.5))
         #print("Centered bound mass.\n")
 #
     def indices(self,zmid,zmax,rxymin,rxymax,rxymida,rxymidb):
