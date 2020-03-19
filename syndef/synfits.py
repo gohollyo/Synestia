@@ -3,7 +3,9 @@ import numpy as np
 import struct
 G=6.674e-11 #SI
 #from scipy.interpolate import griddata #hydrostruct
-"""Classes and functions for accessing and manipulating tabulated EOS data."""
+"""
+Classes and functions for accessing and manipulating tabulated EOS data.
+"""
 ### Module for accessing and manipulating tabulated EOS data
 ### STS 09/2019
 ###
@@ -779,9 +781,9 @@ class extEOStable:
         #------------------------------------------------------------------
 
 ###########################################################################################
-########## GADGET STYLE TABLES
-###########################################################################################
-#Phil J Carter Sept 5, 2019 gadget.py
+# ######### GADGET STYLE TABLES
+# ##########################################################################################
+# Phil J Carter Sept 5, 2019 gadget.py
 class GadgetHeader:
     """Class for Gadget snapshot header."""
     def __init__(self, t=0, nfiles=1, ent=1):
@@ -843,6 +845,7 @@ class Snapshot:
         #self.accel = 0
         #self.dt = 0
         #self.vapfrac = 0
+        self.omg_z = 0
         self.J2Ma2 = 0
         self.g = 0
         self.ind_outer_mid_spl = 0
@@ -921,7 +924,7 @@ class Snapshot:
         self.vx = self.vel.T[0]
         self.vy = self.vel.T[1]
         self.vz = self.vel.T[2]
-        print("Read %d" % self.N, "particles from %s" % fname)
+        #print("Read %d" % self.N, "particles from %s" % fname)
         #CALCULATE CENTER OF MASS
         N=25
         temp=np.argsort(self.pot)
@@ -961,6 +964,7 @@ class Snapshot:
         self.rxy = np.add(np.power(self.x, 2), np.power(self.y, 2)) #m2
         radius2 = np.add(self.rxy,np.power(self.z,2)) #m2
         self.rxy = np.sqrt(self.rxy) #m
+        self.omg_z = (self.vx**2 + self.vy**2)**0.5/self.rxy
         self.J2Ma2 = -np.sum(0.5*np.multiply(self.m,radius2)*(3.0*np.divide(np.power(self.z,2),radius2) - 1.0)) #kg m2
         self.g = np.zeros((self.N, 3))
         self.g_x = self.g.T[0]
@@ -982,6 +986,8 @@ class Snapshot:
         self.ind_outer_mid=np.where((self.rxy >= rxymida) & (np.abs(self.z) <= zmid) & (self.rxy <= rxymidb))
         self.ind_outer_mid_spl = np.where((np.abs(self.z) <= zmid) & (self.rxy <= rxymax) & (self.rxy >= rxymin))
         self.ind_outer_mid_lsq=np.where((np.abs(self.z) <= zmid) & (self.rxy >= 9.4e6))
+        
+        #DETERMINE MIDPLANE PARTICLES
         self.ind_mid=np.where(np.abs(self.z) <= zmid)
         
     def fit_Pmid(self,knots,extra=None):
@@ -1151,16 +1157,16 @@ def piece(x,rxymidb,params0,params1,params2,extra=None):
         return y
 
 ##################################################################################
-### BEGIN synfits.py RUN ###
-##################################################################################
+# ## BEGIN synfits.py RUN ###
+# #################################################################################
 
 #LOAD IN GADGET-2 SNAPSHOTS
 SNAP_Canup=Snapshot()
-SNAP_Canup.load('TE_Example01_Cool05_snapshot_4096_long',thermo=True) #Canup 2012 style giant impact
+SNAP_Canup.load('/Users/gigja/syndef/TE_Example01_Cool05_snapshot_4096_long',thermo=True) #Canup 2012 style giant impact
 SNAP_CukStewart=Snapshot()
-SNAP_CukStewart.load('TE_Example03_Cool01_snapshot_10500_long',thermo=True) #Cuk & Stewart 2012 style giant impact
+SNAP_CukStewart.load('/Users/gigja/syndef/TE_Example03_Cool01_snapshot_10500_long',thermo=True) #Cuk & Stewart 2012 style giant impact
 SNAP_Quintana=Snapshot()
-SNAP_Quintana.load('TE_Example07_CoolB01_snapshot_7200_long',thermo=True) #Quintana style giant impact
+SNAP_Quintana.load('/Users/gigja/syndef/TE_Example07_CoolB01_snapshot_7200_long',thermo=True) #Quintana style giant impact
 zmax=100.e6 #m
 zmid=1.e6 #m
 rxymin=7.e6 #m
@@ -1171,9 +1177,7 @@ SNAP_Canup.indices(zmid,zmax,rxymin,rxymax,rxymida,rxymidb)
 SNAP_CukStewart.indices(zmid,zmax,rxymin,rxymax,rxymida,rxymidb)
 SNAP_Quintana.indices(zmid,zmax,rxymin,rxymax,rxymida,rxymidb)
 #SNAP_Canup.fit_Pmid()
-import sys
-sys.exit()
-
+"""
 #DETERMINE STEP FOR HYDROSTATIC EQUIL CALC
 step=100.
 
@@ -1325,27 +1329,27 @@ if plot_diff:
     cmap1=plt.get_cmap('viridis_r')
     norm1=SymLogNorm(linthresh=1.,vmin=0.,vmax=1.e5)
     extent=[np.amin(A),np.amax(A),np.amin(B),np.amax(B)]
-    """plt.figure()
-    plt.imshow(pgrid.T,cmap=cmap1,norm=norm1,aspect='auto',origin='lower',interpolation='none',extent=extent)
-    plt.colorbar(label='pressure (log bar)')
-    plt.xlabel('r$_{xy}$ (Mm)')
-    plt.ylabel('z (Mm)')
-    plt.xlim([7,80])
-    plt.ylim([0,40])
-    plt.savefig('Ex01Cool05snap4096pressure.pdf',dpi=300,bbox_inches='tight')
-    plt.show()
-    plt.close()
+    #plt.figure()
+    #plt.imshow(pgrid.T,cmap=cmap1,norm=norm1,aspect='auto',origin='lower',interpolation='none',extent=extent)
+    #plt.colorbar(label='pressure (log bar)')
+    #plt.xlabel('r$_{xy}$ (Mm)')
+    #plt.ylabel('z (Mm)')
+    #plt.xlim([7,80])
+    #plt.ylim([0,40])
+    #plt.savefig('Ex01Cool05snap4096pressure.pdf',dpi=300,bbox_inches='tight')
+    #plt.show()
+    #plt.close()
 
-    plt.figure()
-    plt.imshow(C.T,cmap=cmap1,norm=norm1,aspect='auto',origin='lower',interpolation='none',extent=extent)
-    plt.colorbar(label='pressure (log bar)')
-    plt.xlabel('r$_{xy}$ (Mm)')
-    plt.ylabel('z (Mm)')
-    plt.xlim([7,80])
-    plt.ylim([0,40])
-    plt.savefig('Ex01Cool05snap4096hydrostatp.pdf',dpi=300,bbox_inches='tight')
-    plt.show()
-    plt.close()"""
+    #plt.figure()
+    #plt.imshow(C.T,cmap=cmap1,norm=norm1,aspect='auto',origin='lower',interpolation='none',extent=extent)
+    #plt.colorbar(label='pressure (log bar)')
+    #plt.xlabel('r$_{xy}$ (Mm)')
+    #plt.ylabel('z (Mm)')
+    #plt.xlim([7,80])
+    #plt.ylim([0,40])
+    #plt.savefig('Ex01Cool05snap4096hydrostatp.pdf',dpi=300,bbox_inches='tight')
+    #plt.show()
+    #plt.close()
     
     plt.figure()
     cmap2=plt.get_cmap('seismic')
@@ -1365,7 +1369,8 @@ if plot_diff:
     plt.savefig('Ex01Cool05snap4096hydrostatdiff.pdf',dpi=300,bbox_inches='tight')
     plt.show()
     plt.close()
-    
+"""
+
 ####################################################################################
-### END synfits.py FILE ###
-####################################################################################
+# ## END synfits.py FILE ###
+# ###################################################################################
