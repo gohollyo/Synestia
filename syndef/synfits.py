@@ -785,6 +785,7 @@ class extEOStable:
 # ##########################################################################################
 # Phil J Carter Sept 5, 2019 gadget.py
 from scipy.interpolate import LSQUnivariateSpline
+from scipy.optimize import least_squares
 class GadgetHeader:
     """Class for Gadget snapshot header."""
     def __init__(self, t=0, nfiles=1, ent=1):
@@ -998,27 +999,27 @@ class Snapshot:
         SPHrxyMm = SNAP.rxy[ind_outer_mid_spl][indsort]/1e6
         SPHplog = np.log10(SNAP.P[ind_outer_mid_spl][indsort])
         pknots=[*knots]
-        pLSQUSPL = LSQUnivariateSpline(SPHrxyMm, SPHplog, t=pknots, k=3)
+        self.pLSQUSPL = LSQUnivariateSpline(SPHrxyMm, SPHplog, t=pknots, k=3)
         if extra:
             print('knots for midplane pressure curve are rxy = {}'.format(pLSQUSPL.get_knots()))
             print('coefficients for midplane pressure curve are {}'.format(pLSQUSPL.get_coeffs()))
-        return pLSQUSPL
+    
     def fit_rhomid(self,extra=None):
         #DETERMINE LEAST-SQUARES FIT TO RESIDUAL OF MIDPLANE RHO S-CURVE 1
         params_guess=np.ones(4)
         res_lsq = least_squares(resfunc, params_guess, loss='soft_l1', f_scale=0.001, 
-                                args=(np.log10(SNAP.rxy[ind_outer_2]/1e6), np.log10(SNAP.rho[ind_outer_2])))
-
+                                args=(np.log10(self.rxy[self.ind_outer_2]/1e6), np.log10(self.rho[self.ind_outer_2])))
+        
         #DETERMINE LEAST-SQUARES FIT TO RESIDUAL OF MIDPLANE RHO S-CURVE 2
         params_guess_spl=np.array([150.,1.4,16.,-5.7])
         res_lsq_spl = least_squares(resfuncspl, params_guess_spl, loss='soft_l1', f_scale=0.001, 
-                                    args=(np.log10(SNAP.rxy[ind_outer_mid]/1e6), np.log10(SNAP.rho[ind_outer_mid])))
-
+                                    args=(np.log10(self.rxy[self.ind_outer_mid]/1e6), np.log10(self.rho[self.ind_outer_mid])))
+        
         #DETERMINE LEAST-SQUARES FIT TO RESIDUAL OF MIDPLANE RHO LINE
         params_guess_lin=np.ones(2)
         res_lsq_lin = least_squares(resfunclin, params_guess_lin, loss='soft_l1', f_scale=0.001,
-                                    args=(np.log10(SNAP.rxy[ind_outer_1]/1e6), np.log10(SNAP.rho[ind_outer_1])))
-
+                                    args=(np.log10(self.rxy[self.ind_outer_1]/1e6), np.log10(self.rho[self.ind_outer_1])))
+        
         if extra:
             print('Least Squares Fit to Midplane Density - S-curve \n')
             print(res_lsq)
@@ -1028,7 +1029,7 @@ class Snapshot:
             print(res_lsq_lin)
             print('\n Params for midplane density:\n fit 0 {}\n fit 1 {}\n fit 2 {}\n Linear interpolation points are (x1_lim, y1_lim) = ({}, {}) and (x2_lim, y2_lim) = ({}, {})'.format(res_lsq_lin.x,res_lsq_spl.x,res_lsq.x,x1int,y1int,x2int,y2int))
             
-        self.fitrhomid = res_lsq_lin.x,res_lsq_spl.x,res_lsq.x
+        self.rhomidfit = res_lsq_lin.x,res_lsq_spl.x,res_lsq.x
 #        
     def fit_Tmid(self,extra=None):
         params_guess_T=np.asarray([4.e12,-1.66,2.5])
@@ -1162,12 +1163,13 @@ def piece(x,rxymidb,params0,params1,params2,extra=None):
 # #################################################################################
 
 #LOAD IN GADGET-2 SNAPSHOTS
+from pathlib import Path
 SNAP_Canup=Snapshot()
-SNAP_Canup.load('./syndef/TE_Example01_Cool05_snapshot_4096_long',thermo=True) #Canup 2012 style giant impact
+SNAP_Canup.load('TE_Example01_Cool05_snapshot_4096_long',thermo=True) #Canup 2012 style giant impact
 SNAP_CukStewart=Snapshot()
-SNAP_CukStewart.load('./syndef/TE_Example03_Cool01_snapshot_10500_long',thermo=True) #Cuk & Stewart 2012 style giant impact
+SNAP_CukStewart.load('TE_Example03_Cool01_snapshot_10500_long',thermo=True) #Cuk & Stewart 2012 style giant impact
 SNAP_Quintana=Snapshot()
-SNAP_Quintana.load('./syndef/TE_Example07_CoolB01_snapshot_7200_long',thermo=True) #Quintana style giant impact
+SNAP_Quintana.load('TE_Example07_CoolB01_snapshot_7200_long',thermo=True) #Quintana style giant impact
 zmax=100.e6 #m
 zmid=1.e6 #m
 rxymin=7.e6 #m
@@ -1177,6 +1179,9 @@ rxymidb=40.e6 #m
 SNAP_Canup.indices(zmid,zmax,rxymin,rxymax,rxymida,rxymidb)
 SNAP_CukStewart.indices(zmid,zmax,rxymin,rxymax,rxymida,rxymidb)
 SNAP_Quintana.indices(zmid,zmax,rxymin,rxymax,rxymida,rxymidb)
+#SNAP_Canup.fit_rhomid()
+#SNAP_CukStewart.fit_rhomid()
+#SNAP_Quintana.fit_rhomid()
 #SNAP_Canup.fit_Pmid()
 ###############################################################################
 # from scipy.interpolate import LSQUnivariateSpline
