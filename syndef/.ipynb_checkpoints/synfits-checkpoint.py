@@ -784,6 +784,55 @@ class extEOStable:
 # ######### GADGET STYLE TABLES
 # ##########################################################################################
 # Phil J Carter Sept 5, 2019 gadget.py
+from scipy.interpolate import LSQUnivariateSpline
+from scipy.optimize import least_squares
+#FUNCTIONAL FORMS
+def resfunc(params,x,y):
+    return params[0]*x*(1. + np.exp(-x*x*params[1]))**(-params[2]) + params[3]*x - y
+#
+def resfuncspl(params,x,y):
+    return params[0]/(x*np.exp(x*params[1]) + params[2]) + params[3] - y
+#
+def resfunclin(params,x,y):
+    return params[0]*x + params[1] - y
+#
+def resfuncpow(params,x,y):
+    return params[0]*(x**params[1]) + params[2] - y
+#
+def resfunclinpiece(params,x,y):
+    return np.piecewise(x, [x < 10., ((x >= 10.)&(x <= 35.)), x > 35.],
+                        [lambda x: params[0]*x + params[1], params[2],
+                         lambda x: params[3]*x + params[4]]) - y
+#
+def resfuncexp(params,x,y):
+    return x/params[0] + y
+#
+def piece(x,rxymidb,params0,params1,params2,extra=None):
+    x2lim=np.log10(rxymidb/1e6 + 1.)
+    x1lim=np.log10(rxymidb/1e6 - 1.)
+    x0lim=1. #log10 of 10 Mm
+    x2 = x[np.asarray(x >= x2lim)] #make sure none of these are empty; may throw error
+    x1 = x[np.asarray((x <= x1lim) & (x >= x0lim))]
+    x0 = x[np.asarray(x < x0lim)]
+    y2=resfunc(params2, x2, np.zeros(len(x2)))
+    y1=resfuncspl(params1, x1, np.zeros(len(x1)))
+    y0=resfunclin(params0, x0, np.zeros(len(x0)))
+    xmid = x[np.asarray((x < x2lim) & (x > x1lim))]
+    y2lim = resfunc(params2, x2lim, 0.)
+    y1lim = resfuncspl(params1, x1lim, 0.)
+    ymid = np.interp(xmid,np.asarray([x1lim,x2lim]),np.asarray([y1lim,y2lim]))
+    ytemp01=np.concatenate((y0,y1))
+    ytemp1mid=np.concatenate((ytemp01,ymid))
+    y=np.concatenate((ytemp1mid,y2))
+    xtemp01=np.concatenate((x0,x1))
+    xtemp1mid=np.concatenate((xtemp01,xmid))
+    x=np.concatenate((xtemp1mid,x2))
+    if extra:
+        return y,10**x0,y0,10**x1,y1,10**xmid,ymid,10**x2,y2,x1lim,y1lim,x2lim,y2lim
+    else:
+        return y
+#
+#
 class GadgetHeader:
     """Class for Gadget snapshot header."""
     def __init__(self, t=0, nfiles=1, ent=1):
@@ -989,7 +1038,7 @@ class Snapshot:
         
         #DETERMINE MIDPLANE PARTICLES
         self.ind_mid=np.where(np.abs(self.z) <= zmid)
-        
+# 
     def fit_Pmid(self,knots,extra=None):
         #DETERMINE SPLINE FIT TO MIDPLANE PRESSURE CURVE
         ind_outer_mid_spl=np.where((np.abs(SNAP.z) <= zmid) & (SNAP.rxy <= rxymax) & (SNAP.rxy >= rxymin))
@@ -997,27 +1046,27 @@ class Snapshot:
         SPHrxyMm = SNAP.rxy[ind_outer_mid_spl][indsort]/1e6
         SPHplog = np.log10(SNAP.P[ind_outer_mid_spl][indsort])
         pknots=[*knots]
-        pLSQUSPL = LSQUnivariateSpline(SPHrxyMm, SPHplog, t=pknots, k=3)
+        self.pLSQUSPL = LSQUnivariateSpline(SPHrxyMm, SPHplog, t=pknots, k=3)
         if extra:
             print('knots for midplane pressure curve are rxy = {}'.format(pLSQUSPL.get_knots()))
             print('coefficients for midplane pressure curve are {}'.format(pLSQUSPL.get_coeffs()))
-        return pLSQUSPL
+    
     def fit_rhomid(self,extra=None):
         #DETERMINE LEAST-SQUARES FIT TO RESIDUAL OF MIDPLANE RHO S-CURVE 1
         params_guess=np.ones(4)
         res_lsq = least_squares(resfunc, params_guess, loss='soft_l1', f_scale=0.001, 
-                                args=(np.log10(SNAP.rxy[ind_outer_2]/1e6), np.log10(SNAP.rho[ind_outer_2])))
-
+                                args=(np.log10(self.rxy[self.ind_outer_2]/1e6), np.log10(self.rho[self.ind_outer_2])))
+        
         #DETERMINE LEAST-SQUARES FIT TO RESIDUAL OF MIDPLANE RHO S-CURVE 2
         params_guess_spl=np.array([150.,1.4,16.,-5.7])
         res_lsq_spl = least_squares(resfuncspl, params_guess_spl, loss='soft_l1', f_scale=0.001, 
-                                    args=(np.log10(SNAP.rxy[ind_outer_mid]/1e6), np.log10(SNAP.rho[ind_outer_mid])))
-
+                                    args=(np.log10(self.rxy[self.ind_outer_mid]/1e6), np.log10(self.rho[self.ind_outer_mid])))
+        
         #DETERMINE LEAST-SQUARES FIT TO RESIDUAL OF MIDPLANE RHO LINE
         params_guess_lin=np.ones(2)
         res_lsq_lin = least_squares(resfunclin, params_guess_lin, loss='soft_l1', f_scale=0.001,
-                                    args=(np.log10(SNAP.rxy[ind_outer_1]/1e6), np.log10(SNAP.rho[ind_outer_1])))
-
+                                    args=(np.log10(self.rxy[self.ind_outer_1]/1e6), np.log10(self.rho[self.ind_outer_1])))
+        
         if extra:
             print('Least Squares Fit to Midplane Density - S-curve \n')
             print(res_lsq)
@@ -1027,7 +1076,7 @@ class Snapshot:
             print(res_lsq_lin)
             print('\n Params for midplane density:\n fit 0 {}\n fit 1 {}\n fit 2 {}\n Linear interpolation points are (x1_lim, y1_lim) = ({}, {}) and (x2_lim, y2_lim) = ({}, {})'.format(res_lsq_lin.x,res_lsq_spl.x,res_lsq.x,x1int,y1int,x2int,y2int))
             
-        self.fitrhomid = res_lsq_lin.x,res_lsq_spl.x,res_lsq.x
+        self.rhomidfit = res_lsq_lin.x,res_lsq_spl.x,res_lsq.x
 #        
     def fit_Tmid(self,extra=None):
         params_guess_T=np.asarray([4.e12,-1.66,2.5])
@@ -1109,52 +1158,6 @@ class Snapshot:
             print('\n LSQ Univariate Spline Fit to Scale Heights \n')
             print('knots are rxy = {} (Mm)'.format(bknot))
             print('coefficients are {}'.format(bcoef))
-#
-#FUNCTIONAL FORMS
-def resfunc(params,x,y):
-    return params[0]*x*(1. + np.exp(-x*x*params[1]))**(-params[2]) + params[3]*x - y
-#
-def resfuncspl(params,x,y):
-    return params[0]/(x*np.exp(x*params[1]) + params[2]) + params[3] - y
-#
-def resfunclin(params,x,y):
-    return params[0]*x + params[1] - y
-#
-def resfuncpow(params,x,y):
-    return params[0]*(x**params[1]) + params[2] - y
-#
-def resfunclinpiece(params,x,y):
-    return np.piecewise(x, [x < 10., ((x >= 10.)&(x <= 35.)), x > 35.],
-                        [lambda x: params[0]*x + params[1], params[2],
-                         lambda x: params[3]*x + params[4]]) - y
-#
-def resfuncexp(params,x,y):
-    return x/params[0] + y
-#
-def piece(x,rxymidb,params0,params1,params2,extra=None):
-    x2lim=np.log10(rxymidb/1e6 + 1.)
-    x1lim=np.log10(rxymidb/1e6 - 1.)
-    x0lim=1. #log10 of 10 Mm
-    x2 = x[np.asarray(x >= x2lim)] #make sure none of these are empty; may throw error
-    x1 = x[np.asarray((x <= x1lim) & (x >= x0lim))]
-    x0 = x[np.asarray(x < x0lim)]
-    y2=resfunc(params2, x2, np.zeros(len(x2)))
-    y1=resfuncspl(params1, x1, np.zeros(len(x1)))
-    y0=resfunclin(params0, x0, np.zeros(len(x0)))
-    xmid = x[np.asarray((x < x2lim) & (x > x1lim))]
-    y2lim = resfunc(params2, x2lim, 0.)
-    y1lim = resfuncspl(params1, x1lim, 0.)
-    ymid = np.interp(xmid,np.asarray([x1lim,x2lim]),np.asarray([y1lim,y2lim]))
-    ytemp01=np.concatenate((y0,y1))
-    ytemp1mid=np.concatenate((ytemp01,ymid))
-    y=np.concatenate((ytemp1mid,y2))
-    xtemp01=np.concatenate((x0,x1))
-    xtemp1mid=np.concatenate((xtemp01,xmid))
-    x=np.concatenate((xtemp1mid,x2))
-    if extra:
-        return y,10**x0,y0,10**x1,y1,10**xmid,ymid,10**x2,y2,x1lim,y1lim,x2lim,y2lim
-    else:
-        return y
 
 ##################################################################################
 # ## BEGIN synfits.py RUN ###
@@ -1162,11 +1165,11 @@ def piece(x,rxymidb,params0,params1,params2,extra=None):
 
 #LOAD IN GADGET-2 SNAPSHOTS
 SNAP_Canup=Snapshot()
-SNAP_Canup.load('/Users/gigja/syndef/TE_Example01_Cool05_snapshot_4096_long',thermo=True) #Canup 2012 style giant impact
+SNAP_Canup.load('syndef/TE_Example01_Cool05_snapshot_4096_long',thermo=True) #Canup 2012 style giant impact
 SNAP_CukStewart=Snapshot()
-SNAP_CukStewart.load('/Users/gigja/syndef/TE_Example03_Cool01_snapshot_10500_long',thermo=True) #Cuk & Stewart 2012 style giant impact
+SNAP_CukStewart.load('syndef/TE_Example03_Cool01_snapshot_10500_long',thermo=True) #Cuk & Stewart 2012 style giant impact
 SNAP_Quintana=Snapshot()
-SNAP_Quintana.load('/Users/gigja/syndef/TE_Example07_CoolB01_snapshot_7200_long',thermo=True) #Quintana style giant impact
+SNAP_Quintana.load('syndef/TE_Example07_CoolB01_snapshot_7200_long',thermo=True) #Quintana style giant impact
 zmax=100.e6 #m
 zmid=1.e6 #m
 rxymin=7.e6 #m
@@ -1176,200 +1179,204 @@ rxymidb=40.e6 #m
 SNAP_Canup.indices(zmid,zmax,rxymin,rxymax,rxymida,rxymidb)
 SNAP_CukStewart.indices(zmid,zmax,rxymin,rxymax,rxymida,rxymidb)
 SNAP_Quintana.indices(zmid,zmax,rxymin,rxymax,rxymida,rxymidb)
+SNAP_Canup.fit_rhomid()
+SNAP_CukStewart.fit_rhomid()
+SNAP_Quintana.fit_rhomid()
 #SNAP_Canup.fit_Pmid()
-"""
-#DETERMINE STEP FOR HYDROSTATIC EQUIL CALC
-step=100.
-
-#DETERMINE SPLINE FIT TO MIDPLANE PRESSURE CURVE
-SNAP.fit_Pmid([10.,35.,55.]) #knots are in Mm
-ptemplsq = pLSQUSPL(rxyarr)
-
-#CALCULATE RESIDUAL LEAST SQUARES FIT TO MIDPLANE DENSITY CURVE
-SNAP.fit_rhomid()
-testy=piece(np.log10(rxyarr),rxymidb,*self.rhomidfit)
-
-#DETERMINE LEAST-SQUARES FIT TO RESIDUAL OF MIDPLANE TEMPERATURE CURVE
-SNAP.fit_Tmid()
-rxyarr_T=np.linspace(9.4,100.,1000)
-y_zero_T=np.zeros(len(rxyarr_T))
-Tfit = resfuncpow(self.res_lsq_pow.x,rxyarr_T*1e6,y_zero_T)
-
-#MIDPLANE VELOCITIES
-SNAPvxy = np.sqrt(SNAP.vx[ind_outer_mid_spl]**2 + SNAP.vy[ind_outer_mid_spl]**2) #Mm/s?
-vkep = np.sqrt((6.67408e-11)*np.sum(SNAP.m)/(rxyarr*1e6)) #m/s
-
-#LEAST-SQUARES FIT TO RESIDUAL OF MIDPLANE ENTROPY CURVE
-
-
-#CALCULATING SPLINE FIT TO SCALE HEIGHTS
-temp4=LSQUSPL(rxyarr) #density
-
-#LOAD IN EOS -- NEED TO PLOT AGAINST THERMAL PARAMETERS
-NewEOS=extEOStable()
-NewEOS.loadextsesame('NEW-SESAME-EXT.TXT')
-NewEOS.loadstdsesame('NEW-SESAME-STD.TXT')
-NewEOS.MODELNAME='GADGET2 Forsterite'
-NewEOS.MDQ=np.zeros((NewEOS.NT,NewEOS.ND))
-NewEOS.MATID=1.0
-NewEOS.DATE=190802.
-NewEOS.VERSION=1.0
-NewEOS.FMN=70.
-NewEOS.FMW=140.691
-NewEOS.R0REF=3.32
-NewEOS.K0REF=1.446E12
-NewEOS.T0REF=298.
-NewEOS.P0REF=1.E6
-NewEOS.loadaneos(aneosinfname='ANEOS.INPUT',aneosoutfname='ANEOS.OUTPUT')
-#isen=isentrope_class()
-#isen.loadisen(s_isen,NewEOS)
-
-want_hydro=None
-if want_hydro:
-    #INITIALIZE HYDROSTAT CLASS
-    rxy=np.linspace(rxymin,rxymax,100)
-    z=np.linspace(0.,zmax,int((zmax-.1)//step)+1)
-    hyd=hydrostat(1,rxy,z) #first argument is grid flag: 1 for arbitrary reg. grid, 0 for GADGET positions
-
-    #LOAD PRESSURE FIT COEFFICIENTS, ISO-ENTROPY, J2MA2, TOTAL MASS INTO HYDROSTAT CLASS
-    s_isen=7.866e-3 #MJ/K/kg
-    #put in entropy fit into hydrostatic calculations
-    hyd.loadhyd(pLSQUSPL,s_isen,SNAP.J2Ma2,np.sum(SNAP.m))
-
-    #CALCULATE HYDROSTATIC EQUIL FOR GRID
-    hyd.calc_hydrostat_equil(isen)
-
-    #CALC DIFF IN PRESSURE BETWEEN SNAPSHOT & SEMI-ANALYTIAL CALC
-    pdiff,pgrid=hyd.calc_pdiff(SNAP.rxy[ind_outer],np.abs(SNAP.z[ind_outer]),SNAP.P[ind_outer]) #bar
-        #second argument is for press grid (bar) computed by griddata
-    A=hyd.RXY/1e6
-    B=hyd.Z/1e6
-    C=hyd.P/1e5
-    D=pgrid-(hyd.P/1e5)
-
-#PLOTS
-#plot midplane fits
-plot_mid=None
-if plot_mid:
-    rxyarr1 = np.linspace(7.,9.999999,50)
-    y_zero_S1 = np.zeros(len(rxyarr1))
-    Sfit1 = resfunclinpiece(res_lsq_lp.x,rxyarr1,y_zero_S1)
-    rxyarr2 = np.linspace(10.,35.,100)
-    y_zero_S2 = np.zeros(len(rxyarr2))
-    Sfit2 = resfunclinpiece(res_lsq_lp.x,rxyarr2,y_zero_S2)
-    rxyarr3 = np.linspace(35.01,100.,200)
-    y_zero_S3 = np.zeros(len(rxyarr3))
-    Sfit3 = resfunclinpiece(res_lsq_lp.x,rxyarr3,y_zero_S3)
-    
-    fig,ax=plt.subplots(nrows=3,ncols=2,figsize=(6,9))
-    ax[0,0].plot(SNAP.x/1e6,SNAP.z/1e6,'.',color='grey',markersize=1)
-    ax[0,0].plot(SNAP.x[ind_outer_mid_spl]/1e6,SNAP.z[ind_outer_mid_spl]/1e6,'k.',markersize=1)
-    ax[0,0].set_xlabel('x (Mm)')
-    ax[0,0].set_ylabel('z (Mm)')
-    ax[0,0].set_aspect(1)
-    ax[0,1].plot(SNAP.rxy[ind_outer_mid_spl]/1e6,SNAP.S[ind_outer_mid_spl],'k.',markersize=1)
-    ax[0,1].plot(rxyarr1,Sfit1,'r',markersize=1,label='piece-wise 0')
-    ax[0,1].plot(rxyarr2,Sfit2,'b',markersize=1,label='piece-wise 1')
-    ax[0,1].plot(rxyarr3,Sfit3,'g',markersize=1,label='piece-wise 2')
-    ax[0,1].set_xlabel('r$_{xy}$ (Mm)')
-    ax[0,1].set_ylabel('outer region midplane\n specific entropy (J K$^{-1}$ kg$^{-1}$)',fontsize=8)
-    ax[0,1].legend(loc=4,fontsize='small')
-    ax[1,0].plot(SNAP.rxy[ind_outer_mid_spl]/1e6,np.log10(SNAP.P[ind_outer_mid_spl]),'k.',markersize=1)
-    ax[1,0].plot(rxyarr,ptemplsq,'.',markersize=1)
-    ax[1,0].set_xlabel('r$_{xy}$ (Mm)')
-    ax[1,0].set_ylabel('outer region midplane\n pressure (log$_{10}$ Pa)',fontsize=8)
-    ax[1,1].plot(SNAP.rxy[ind_outer_mid_spl]/1e6,np.log10(SNAP.rho[ind_outer_mid_spl]),'k.',markersize=1)
-    ax[1,1].plot(testx0,testy0,'r',markersize=1,label='piece-wise 0')
-    ax[1,1].plot(testx1,testy1,'b',markersize=1,label='piece-wise 1')
-    ax[1,1].plot(testxmid,testymid,markersize=1,color='orange',label='piece-wise mid')
-    ax[1,1].plot(testx2,testy2,'g',markersize=1,label='piece-wise 2')
-    ax[1,1].set_xlabel('r$_{xy}$ (Mm)')
-    ax[1,1].set_ylabel('outer region midplane\n density (log$_{10}$ kg/m$^3$)',fontsize=8)
-    ax[1,1].legend(fontsize='small')
-    ax[2,0].plot(SNAP.rxy[ind_outer_mid_spl]/1e6,SNAP.T[ind_outer_mid_spl],'k.',markersize=1)
-    ax[2,0].plot(rxyarr_T,Tfit*1e3,'.',markersize=1)
-    ax[2,0].set_xlabel('r$_{xy}$ (Mm)')
-    ax[2,0].set_ylabel('outer region midplane\n temperature (K)',fontsize=8)
-    ax[2,1].plot(rxyarr,vkep,'--',color='purple',markersize=1)
-    ax[2,1].plot(SNAP.rxy[ind_outer_mid_spl]/1e6,SNAPvxy,'k.',markersize=1)
-    ax[2,1].set_xlabel('r$_{xy}$ (Mm)')
-    ax[2,1].set_ylabel('outer region midplane\n in-plane velocity v$_{xy}$ (m/s)',fontsize=8)
-    fig.tight_layout()
-    plt.savefig('Ex01Cool05Snap4096midfits.pdf',dpi=300,bbox_inches='tight')
-    plt.show()
-    plt.close()
-
-#plot scale height of density
-plot_zs=None
-if plot_zs:
-    #GRIDDATA OFF-THE-MIDPLANE DENSITY
-    xi=SNAP.rxy[ind_outer_S]/1e6
-    yi=np.abs(SNAP.z[ind_outer_S])/1e6
-    test0,test1=np.meshgrid(np.linspace(7.,125.,100),np.linspace(0.,100.,100))
-    test2=griddata((xi,yi),np.log10(SNAP.rho[ind_outer_S]),(test0,test1),method='linear')
-    
-    plt.figure()
-    plt.pcolormesh(test0,test1,test2,cmap='viridis_r',vmin=-4,vmax=3)
-    plt.colorbar(label='log density (kg/m$^3$)')
-    plt.plot(bins,res_lsq_exp,'ko',markersize=1,label='z$_s$ bin')
-    plt.plot(temp0,temp4,'m',markersize=1,label='cubic spline fit')
-    plt.ylim([0,100])
-    plt.xlim([7,125])
-    plt.xlabel('r$_{xy}$ (Mm)')
-    plt.ylabel('z (Mm)')
-    plt.legend(loc=2,fontsize='xx-small')
-    plt.savefig('Ex01Cool05Snap4096_rhofit_zscalefit.pdf',dpi=300,bbox_inches='tight')
-    plt.show()
-    plt.close()
-    
-#plot error analytic vs SPH pressures
-plot_diff=None
-if plot_diff:
-    from matplotlib.colors import Normalize,SymLogNorm
-    cmap1=plt.get_cmap('viridis_r')
-    norm1=SymLogNorm(linthresh=1.,vmin=0.,vmax=1.e5)
-    extent=[np.amin(A),np.amax(A),np.amin(B),np.amax(B)]
-    #plt.figure()
-    #plt.imshow(pgrid.T,cmap=cmap1,norm=norm1,aspect='auto',origin='lower',interpolation='none',extent=extent)
-    #plt.colorbar(label='pressure (log bar)')
-    #plt.xlabel('r$_{xy}$ (Mm)')
-    #plt.ylabel('z (Mm)')
-    #plt.xlim([7,80])
-    #plt.ylim([0,40])
-    #plt.savefig('Ex01Cool05snap4096pressure.pdf',dpi=300,bbox_inches='tight')
-    #plt.show()
-    #plt.close()
-
-    #plt.figure()
-    #plt.imshow(C.T,cmap=cmap1,norm=norm1,aspect='auto',origin='lower',interpolation='none',extent=extent)
-    #plt.colorbar(label='pressure (log bar)')
-    #plt.xlabel('r$_{xy}$ (Mm)')
-    #plt.ylabel('z (Mm)')
-    #plt.xlim([7,80])
-    #plt.ylim([0,40])
-    #plt.savefig('Ex01Cool05snap4096hydrostatp.pdf',dpi=300,bbox_inches='tight')
-    #plt.show()
-    #plt.close()
-    
-    plt.figure()
-    cmap2=plt.get_cmap('seismic')
-    pdiffmax=np.amax(D)
-    pdiffmin=np.amin(D)
-    if pdiffmax < -pdiffmin:
-        pdifflim = -pdiffmin
-    elif pdiffmax >= -pdiffmin:
-        pdifflim = pdiffmax
-    norm2=SymLogNorm(linthresh=10.,vmin=-pdifflim,vmax=pdifflim)
-    plt.imshow(D.T,cmap=cmap2,norm=norm2,aspect='auto',origin='lower',interpolation='none',extent=extent)
-    plt.colorbar(label='diff. in press. between SPH and hyd. equil. (bar)')
-    plt.xlabel('r$_{xy}$ (Mm)')
-    plt.ylabel('z (Mm)')
-    plt.xlim([7,80])
-    plt.ylim([0,40])
-    plt.savefig('Ex01Cool05snap4096hydrostatdiff.pdf',dpi=300,bbox_inches='tight')
-    plt.show()
-    plt.close()
-"""
+###############################################################################
+# from scipy.interpolate import LSQUnivariateSpline
+#
+# #DETERMINE STEP FOR HYDROSTATIC EQUIL CALC
+# step=100.
+#
+# #DETERMINE SPLINE FIT TO MIDPLANE PRESSURE CURVE
+# SNAP.fit_Pmid([10.,35.,55.]) #knots are in Mm
+# ptemplsq = pLSQUSPL(rxyarr)
+#
+# #CALCULATE RESIDUAL LEAST SQUARES FIT TO MIDPLANE DENSITY CURVE
+# SNAP.fit_rhomid()
+# testy=piece(np.log10(rxyarr),rxymidb,*self.rhomidfit)
+#
+# #DETERMINE LEAST-SQUARES FIT TO RESIDUAL OF MIDPLANE TEMPERATURE CURVE
+# SNAP.fit_Tmid()
+# rxyarr_T=np.linspace(9.4,100.,1000)
+# y_zero_T=np.zeros(len(rxyarr_T))
+# Tfit = resfuncpow(self.res_lsq_pow.x,rxyarr_T*1e6,y_zero_T)
+#
+# #MIDPLANE VELOCITIES
+# SNAPvxy = np.sqrt(SNAP.vx[ind_outer_mid_spl]**2 + SNAP.vy[ind_outer_mid_spl]**2) #Mm/s?
+# vkep = np.sqrt((6.67408e-11)*np.sum(SNAP.m)/(rxyarr*1e6)) #m/s
+#
+# #LEAST-SQUARES FIT TO RESIDUAL OF MIDPLANE ENTROPY CURVE
+#
+#
+# #CALCULATING SPLINE FIT TO SCALE HEIGHTS
+# temp4=LSQUSPL(rxyarr) #density
+#
+# #LOAD IN EOS -- NEED TO PLOT AGAINST THERMAL PARAMETERS
+# NewEOS=extEOStable()
+# NewEOS.loadextsesame('NEW-SESAME-EXT.TXT')
+# NewEOS.loadstdsesame('NEW-SESAME-STD.TXT')
+# NewEOS.MODELNAME='GADGET2 Forsterite'
+# NewEOS.MDQ=np.zeros((NewEOS.NT,NewEOS.ND))
+# NewEOS.MATID=1.0
+# NewEOS.DATE=190802.
+# NewEOS.VERSION=1.0
+# NewEOS.FMN=70.
+# NewEOS.FMW=140.691
+# NewEOS.R0REF=3.32
+# NewEOS.K0REF=1.446E12
+# NewEOS.T0REF=298.
+# NewEOS.P0REF=1.E6
+# NewEOS.loadaneos(aneosinfname='ANEOS.INPUT',aneosoutfname='ANEOS.OUTPUT')
+# #isen=isentrope_class()
+# #isen.loadisen(s_isen,NewEOS)
+#
+# want_hydro=None
+# if want_hydro:
+#     #INITIALIZE HYDROSTAT CLASS
+#     rxy=np.linspace(rxymin,rxymax,100)
+#     z=np.linspace(0.,zmax,int((zmax-.1)//step)+1)
+#     hyd=hydrostat(1,rxy,z) #first argument is grid flag: 1 for arbitrary reg. grid, 0 for GADGET positions
+#
+#     #LOAD PRESSURE FIT COEFFICIENTS, ISO-ENTROPY, J2MA2, TOTAL MASS INTO HYDROSTAT CLASS
+#     s_isen=7.866e-3 #MJ/K/kg
+#     #put in entropy fit into hydrostatic calculations
+#     hyd.loadhyd(pLSQUSPL,s_isen,SNAP.J2Ma2,np.sum(SNAP.m))
+#
+#     #CALCULATE HYDROSTATIC EQUIL FOR GRID
+#     hyd.calc_hydrostat_equil(isen)
+#
+#     #CALC DIFF IN PRESSURE BETWEEN SNAPSHOT & SEMI-ANALYTIAL CALC
+#     pdiff,pgrid=hyd.calc_pdiff(SNAP.rxy[ind_outer],np.abs(SNAP.z[ind_outer]),SNAP.P[ind_outer]) #bar
+#         #second argument is for press grid (bar) computed by griddata
+#     A=hyd.RXY/1e6
+#     B=hyd.Z/1e6
+#     C=hyd.P/1e5
+#     D=pgrid-(hyd.P/1e5)
+#
+# #PLOTS
+# #plot midplane fits
+# plot_mid=None
+# if plot_mid:
+#     rxyarr1 = np.linspace(7.,9.999999,50)
+#     y_zero_S1 = np.zeros(len(rxyarr1))
+#     Sfit1 = resfunclinpiece(res_lsq_lp.x,rxyarr1,y_zero_S1)
+#     rxyarr2 = np.linspace(10.,35.,100)
+#     y_zero_S2 = np.zeros(len(rxyarr2))
+#     Sfit2 = resfunclinpiece(res_lsq_lp.x,rxyarr2,y_zero_S2)
+#     rxyarr3 = np.linspace(35.01,100.,200)
+#     y_zero_S3 = np.zeros(len(rxyarr3))
+#     Sfit3 = resfunclinpiece(res_lsq_lp.x,rxyarr3,y_zero_S3)
+#     
+#     fig,ax=plt.subplots(nrows=3,ncols=2,figsize=(6,9))
+#     ax[0,0].plot(SNAP.x/1e6,SNAP.z/1e6,'.',color='grey',markersize=1)
+#     ax[0,0].plot(SNAP.x[ind_outer_mid_spl]/1e6,SNAP.z[ind_outer_mid_spl]/1e6,'k.',markersize=1)
+#     ax[0,0].set_xlabel('x (Mm)')
+#     ax[0,0].set_ylabel('z (Mm)')
+#     ax[0,0].set_aspect(1)
+#     ax[0,1].plot(SNAP.rxy[ind_outer_mid_spl]/1e6,SNAP.S[ind_outer_mid_spl],'k.',markersize=1)
+#     ax[0,1].plot(rxyarr1,Sfit1,'r',markersize=1,label='piece-wise 0')
+#     ax[0,1].plot(rxyarr2,Sfit2,'b',markersize=1,label='piece-wise 1')
+#     ax[0,1].plot(rxyarr3,Sfit3,'g',markersize=1,label='piece-wise 2')
+#     ax[0,1].set_xlabel('r$_{xy}$ (Mm)')
+#     ax[0,1].set_ylabel('outer region midplane\n specific entropy (J K$^{-1}$ kg$^{-1}$)',fontsize=8)
+#     ax[0,1].legend(loc=4,fontsize='small')
+#     ax[1,0].plot(SNAP.rxy[ind_outer_mid_spl]/1e6,np.log10(SNAP.P[ind_outer_mid_spl]),'k.',markersize=1)
+#     ax[1,0].plot(rxyarr,ptemplsq,'.',markersize=1)
+#     ax[1,0].set_xlabel('r$_{xy}$ (Mm)')
+#     ax[1,0].set_ylabel('outer region midplane\n pressure (log$_{10}$ Pa)',fontsize=8)
+#     ax[1,1].plot(SNAP.rxy[ind_outer_mid_spl]/1e6,np.log10(SNAP.rho[ind_outer_mid_spl]),'k.',markersize=1)
+#     ax[1,1].plot(testx0,testy0,'r',markersize=1,label='piece-wise 0')
+#     ax[1,1].plot(testx1,testy1,'b',markersize=1,label='piece-wise 1')
+#     ax[1,1].plot(testxmid,testymid,markersize=1,color='orange',label='piece-wise mid')
+#     ax[1,1].plot(testx2,testy2,'g',markersize=1,label='piece-wise 2')
+#     ax[1,1].set_xlabel('r$_{xy}$ (Mm)')
+#     ax[1,1].set_ylabel('outer region midplane\n density (log$_{10}$ kg/m$^3$)',fontsize=8)
+#     ax[1,1].legend(fontsize='small')
+#     ax[2,0].plot(SNAP.rxy[ind_outer_mid_spl]/1e6,SNAP.T[ind_outer_mid_spl],'k.',markersize=1)
+#     ax[2,0].plot(rxyarr_T,Tfit*1e3,'.',markersize=1)
+#     ax[2,0].set_xlabel('r$_{xy}$ (Mm)')
+#     ax[2,0].set_ylabel('outer region midplane\n temperature (K)',fontsize=8)
+#     ax[2,1].plot(rxyarr,vkep,'--',color='purple',markersize=1)
+#     ax[2,1].plot(SNAP.rxy[ind_outer_mid_spl]/1e6,SNAPvxy,'k.',markersize=1)
+#     ax[2,1].set_xlabel('r$_{xy}$ (Mm)')
+#     ax[2,1].set_ylabel('outer region midplane\n in-plane velocity v$_{xy}$ (m/s)',fontsize=8)
+#     fig.tight_layout()
+#     plt.savefig('Ex01Cool05Snap4096midfits.pdf',dpi=300,bbox_inches='tight')
+#     plt.show()
+#     plt.close()
+#
+# #plot scale height of density
+# plot_zs=None
+# if plot_zs:
+#     #GRIDDATA OFF-THE-MIDPLANE DENSITY
+#     xi=SNAP.rxy[ind_outer_S]/1e6
+#     yi=np.abs(SNAP.z[ind_outer_S])/1e6
+#     test0,test1=np.meshgrid(np.linspace(7.,125.,100),np.linspace(0.,100.,100))
+#     test2=griddata((xi,yi),np.log10(SNAP.rho[ind_outer_S]),(test0,test1),method='linear')
+#     
+#     plt.figure()
+#     plt.pcolormesh(test0,test1,test2,cmap='viridis_r',vmin=-4,vmax=3)
+#     plt.colorbar(label='log density (kg/m$^3$)')
+#     plt.plot(bins,res_lsq_exp,'ko',markersize=1,label='z$_s$ bin')
+#     plt.plot(temp0,temp4,'m',markersize=1,label='cubic spline fit')
+#     plt.ylim([0,100])
+#     plt.xlim([7,125])
+#     plt.xlabel('r$_{xy}$ (Mm)')
+#     plt.ylabel('z (Mm)')
+#     plt.legend(loc=2,fontsize='xx-small')
+#     plt.savefig('Ex01Cool05Snap4096_rhofit_zscalefit.pdf',dpi=300,bbox_inches='tight')
+#     plt.show()
+#     plt.close()
+#     
+# #plot error analytic vs SPH pressures
+# plot_diff=None
+# if plot_diff:
+#     from matplotlib.colors import Normalize,SymLogNorm
+#     cmap1=plt.get_cmap('viridis_r')
+#     norm1=SymLogNorm(linthresh=1.,vmin=0.,vmax=1.e5)
+#     extent=[np.amin(A),np.amax(A),np.amin(B),np.amax(B)]
+#     #plt.figure()
+#     #plt.imshow(pgrid.T,cmap=cmap1,norm=norm1,aspect='auto',origin='lower',interpolation='none',extent=extent)
+#     #plt.colorbar(label='pressure (log bar)')
+#     #plt.xlabel('r$_{xy}$ (Mm)')
+#     #plt.ylabel('z (Mm)')
+#     #plt.xlim([7,80])
+#     #plt.ylim([0,40])
+#     #plt.savefig('Ex01Cool05snap4096pressure.pdf',dpi=300,bbox_inches='tight')
+#     #plt.show()
+#     #plt.close()
+#
+#     #plt.figure()
+#     #plt.imshow(C.T,cmap=cmap1,norm=norm1,aspect='auto',origin='lower',interpolation='none',extent=extent)
+#     #plt.colorbar(label='pressure (log bar)')
+#     #plt.xlabel('r$_{xy}$ (Mm)')
+#     #plt.ylabel('z (Mm)')
+#     #plt.xlim([7,80])
+#     #plt.ylim([0,40])
+#     #plt.savefig('Ex01Cool05snap4096hydrostatp.pdf',dpi=300,bbox_inches='tight')
+#     #plt.show()
+#     #plt.close()
+#     
+#     plt.figure()
+#     cmap2=plt.get_cmap('seismic')
+#     pdiffmax=np.amax(D)
+#     pdiffmin=np.amin(D)
+#     if pdiffmax < -pdiffmin:
+#         pdifflim = -pdiffmin
+#     elif pdiffmax >= -pdiffmin:
+#         pdifflim = pdiffmax
+#     norm2=SymLogNorm(linthresh=10.,vmin=-pdifflim,vmax=pdifflim)
+#     plt.imshow(D.T,cmap=cmap2,norm=norm2,aspect='auto',origin='lower',interpolation='none',extent=extent)
+#     plt.colorbar(label='diff. in press. between SPH and hyd. equil. (bar)')
+#     plt.xlabel('r$_{xy}$ (Mm)')
+#     plt.ylabel('z (Mm)')
+#     plt.xlim([7,80])
+#     plt.ylim([0,40])
+#     plt.savefig('Ex01Cool05snap4096hydrostatdiff.pdf',dpi=300,bbox_inches='tight')
+#     plt.show()
+#     plt.close()
 
 ####################################################################################
 # ## END synfits.py FILE ###

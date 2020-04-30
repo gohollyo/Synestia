@@ -786,6 +786,53 @@ class extEOStable:
 # Phil J Carter Sept 5, 2019 gadget.py
 from scipy.interpolate import LSQUnivariateSpline
 from scipy.optimize import least_squares
+#FUNCTIONAL FORMS
+def resfunc(params,x,y):
+    return params[0]*x*(1. + np.exp(-x*x*params[1]))**(-params[2]) + params[3]*x - y
+#
+def resfuncspl(params,x,y):
+    return params[0]/(x*np.exp(x*params[1]) + params[2]) + params[3] - y
+#
+def resfunclin(params,x,y):
+    return params[0]*x + params[1] - y
+#
+def resfuncpow(params,x,y):
+    return params[0]*(x**params[1]) + params[2] - y
+#
+def resfunclinpiece(params,x,y):
+    return np.piecewise(x, [x < 10., ((x >= 10.)&(x <= 35.)), x > 35.],
+                        [lambda x: params[0]*x + params[1], params[2],
+                         lambda x: params[3]*x + params[4]]) - y
+#
+def resfuncexp(params,x,y):
+    return x/params[0] + y
+#
+def piece(x,rxymidb,params0,params1,params2,extra=None):
+    x2lim=np.log10(rxymidb/1e6 + 1.)
+    x1lim=np.log10(rxymidb/1e6 - 1.)
+    x0lim=1. #log10 of 10 Mm
+    x2 = x[np.asarray(x >= x2lim)] #make sure none of these are empty; may throw error
+    x1 = x[np.asarray((x <= x1lim) & (x >= x0lim))]
+    x0 = x[np.asarray(x < x0lim)]
+    y2=resfunc(params2, x2, np.zeros(len(x2)))
+    y1=resfuncspl(params1, x1, np.zeros(len(x1)))
+    y0=resfunclin(params0, x0, np.zeros(len(x0)))
+    xmid = x[np.asarray((x < x2lim) & (x > x1lim))]
+    y2lim = resfunc(params2, x2lim, 0.)
+    y1lim = resfuncspl(params1, x1lim, 0.)
+    ymid = np.interp(xmid,np.asarray([x1lim,x2lim]),np.asarray([y1lim,y2lim]))
+    ytemp01=np.concatenate((y0,y1))
+    ytemp1mid=np.concatenate((ytemp01,ymid))
+    y=np.concatenate((ytemp1mid,y2))
+    xtemp01=np.concatenate((x0,x1))
+    xtemp1mid=np.concatenate((xtemp01,xmid))
+    x=np.concatenate((xtemp1mid,x2))
+    if extra:
+        return y,10**x0,y0,10**x1,y1,10**xmid,ymid,10**x2,y2,x1lim,y1lim,x2lim,y2lim
+    else:
+        return y
+#
+#
 class GadgetHeader:
     """Class for Gadget snapshot header."""
     def __init__(self, t=0, nfiles=1, ent=1):
@@ -991,7 +1038,7 @@ class Snapshot:
         
         #DETERMINE MIDPLANE PARTICLES
         self.ind_mid=np.where(np.abs(self.z) <= zmid)
-        
+# 
     def fit_Pmid(self,knots,extra=None):
         #DETERMINE SPLINE FIT TO MIDPLANE PRESSURE CURVE
         ind_outer_mid_spl=np.where((np.abs(SNAP.z) <= zmid) & (SNAP.rxy <= rxymax) & (SNAP.rxy >= rxymin))
@@ -1111,65 +1158,18 @@ class Snapshot:
             print('\n LSQ Univariate Spline Fit to Scale Heights \n')
             print('knots are rxy = {} (Mm)'.format(bknot))
             print('coefficients are {}'.format(bcoef))
-#
-#FUNCTIONAL FORMS
-def resfunc(params,x,y):
-    return params[0]*x*(1. + np.exp(-x*x*params[1]))**(-params[2]) + params[3]*x - y
-#
-def resfuncspl(params,x,y):
-    return params[0]/(x*np.exp(x*params[1]) + params[2]) + params[3] - y
-#
-def resfunclin(params,x,y):
-    return params[0]*x + params[1] - y
-#
-def resfuncpow(params,x,y):
-    return params[0]*(x**params[1]) + params[2] - y
-#
-def resfunclinpiece(params,x,y):
-    return np.piecewise(x, [x < 10., ((x >= 10.)&(x <= 35.)), x > 35.],
-                        [lambda x: params[0]*x + params[1], params[2],
-                         lambda x: params[3]*x + params[4]]) - y
-#
-def resfuncexp(params,x,y):
-    return x/params[0] + y
-#
-def piece(x,rxymidb,params0,params1,params2,extra=None):
-    x2lim=np.log10(rxymidb/1e6 + 1.)
-    x1lim=np.log10(rxymidb/1e6 - 1.)
-    x0lim=1. #log10 of 10 Mm
-    x2 = x[np.asarray(x >= x2lim)] #make sure none of these are empty; may throw error
-    x1 = x[np.asarray((x <= x1lim) & (x >= x0lim))]
-    x0 = x[np.asarray(x < x0lim)]
-    y2=resfunc(params2, x2, np.zeros(len(x2)))
-    y1=resfuncspl(params1, x1, np.zeros(len(x1)))
-    y0=resfunclin(params0, x0, np.zeros(len(x0)))
-    xmid = x[np.asarray((x < x2lim) & (x > x1lim))]
-    y2lim = resfunc(params2, x2lim, 0.)
-    y1lim = resfuncspl(params1, x1lim, 0.)
-    ymid = np.interp(xmid,np.asarray([x1lim,x2lim]),np.asarray([y1lim,y2lim]))
-    ytemp01=np.concatenate((y0,y1))
-    ytemp1mid=np.concatenate((ytemp01,ymid))
-    y=np.concatenate((ytemp1mid,y2))
-    xtemp01=np.concatenate((x0,x1))
-    xtemp1mid=np.concatenate((xtemp01,xmid))
-    x=np.concatenate((xtemp1mid,x2))
-    if extra:
-        return y,10**x0,y0,10**x1,y1,10**xmid,ymid,10**x2,y2,x1lim,y1lim,x2lim,y2lim
-    else:
-        return y
 
 ##################################################################################
 # ## BEGIN synfits.py RUN ###
 # #################################################################################
 
 #LOAD IN GADGET-2 SNAPSHOTS
-from pathlib import Path
 SNAP_Canup=Snapshot()
-SNAP_Canup.load('TE_Example01_Cool05_snapshot_4096_long',thermo=True) #Canup 2012 style giant impact
+SNAP_Canup.load('syndef/TE_Example01_Cool05_snapshot_4096_long',thermo=True) #Canup 2012 style giant impact
 SNAP_CukStewart=Snapshot()
-SNAP_CukStewart.load('TE_Example03_Cool01_snapshot_10500_long',thermo=True) #Cuk & Stewart 2012 style giant impact
+SNAP_CukStewart.load('syndef/TE_Example03_Cool01_snapshot_10500_long',thermo=True) #Cuk & Stewart 2012 style giant impact
 SNAP_Quintana=Snapshot()
-SNAP_Quintana.load('TE_Example07_CoolB01_snapshot_7200_long',thermo=True) #Quintana style giant impact
+SNAP_Quintana.load('syndef/TE_Example07_CoolB01_snapshot_7200_long',thermo=True) #Quintana style giant impact
 zmax=100.e6 #m
 zmid=1.e6 #m
 rxymin=7.e6 #m
@@ -1179,9 +1179,9 @@ rxymidb=40.e6 #m
 SNAP_Canup.indices(zmid,zmax,rxymin,rxymax,rxymida,rxymidb)
 SNAP_CukStewart.indices(zmid,zmax,rxymin,rxymax,rxymida,rxymidb)
 SNAP_Quintana.indices(zmid,zmax,rxymin,rxymax,rxymida,rxymidb)
-#SNAP_Canup.fit_rhomid()
-#SNAP_CukStewart.fit_rhomid()
-#SNAP_Quintana.fit_rhomid()
+SNAP_Canup.fit_rhomid()
+SNAP_CukStewart.fit_rhomid()
+SNAP_Quintana.fit_rhomid()
 #SNAP_Canup.fit_Pmid()
 ###############################################################################
 # from scipy.interpolate import LSQUnivariateSpline
