@@ -1,0 +1,9 @@
+name: synestia
+channels:
+  - conda-forge
+dependencies:
+  - numpy
+  - matplotlib
+  - math
+  - ipywidgets
+  - rebound
