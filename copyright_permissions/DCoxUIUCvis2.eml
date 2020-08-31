@@ -1,0 +1,623 @@
+Delivered-To: gohollyo@gmx.ucdavis.edu
+Received: by 2002:ad4:560b:0:0:0:0:0 with SMTP id ca11csp373714qvb;
+        Fri, 17 Jul 2020 08:51:29 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyPLHhoeJDDCwiRxcPT/hmc6kZ/jdffrNKgby9k6Z6kZk0Y6lAtipQ8390n0RGzRtIWSk1B
+X-Received: by 2002:a17:90a:eb01:: with SMTP id j1mr10694764pjz.29.1595001089835;
+        Fri, 17 Jul 2020 08:51:29 -0700 (PDT)
+ARC-Seal: i=3; a=rsa-sha256; t=1595001089; cv=pass;
+        d=google.com; s=arc-20160816;
+        b=hI0/ghq6cBhDs7LQzWVdfA94HYLGyeDSq8kA07Vvcy4QDfrSvfcQ55wysGuq8iIeO+
+         /G3r1BPmwLY5JI9wiqAOMbd6rWsSiEAh4zhaGeuCT/DcYMAPjDjvKv7Gj7wC6+DtTYO4
+         Y6RsBA32wzgcndVRG4igoYsSs4kg2Y0SH4oT2KTKhllDCZSziNTZ2f863dxfmPvrqUEo
+         1vii/z1onOlUawcMSMSfwJilcsZcPqBMYkLJzCneaUriR8WDMIfoUcDKj3ZSPzFqtoDG
+         v4Vn6TGyHt+t8+rjgafD2/EB/gTZyfY9ZEd5QAoAaj79eBkHuFSgVElbjMSv+wieaac3
+         rf0Q==
+ARC-Message-Signature: i=3; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20160816;
+        h=mime-version:authentication-results-original:content-language
+         :accept-language:in-reply-to:references:message-id:date:thread-index
+         :thread-topic:subject:cc:to:from:dkim-signature;
+        bh=mSzehJ1UoPgpWGZJjuoEiEmrUFNKw46S6lBJ9lAEFmE=;
+        b=QK8aaHFFrkRA/C0khHasszlbjXx8gz0YxjX7BDqD26Itvei52Z3q7dTtkXfPI8hg8b
+         8hdraY8R8QUmwrX8Hyank8DSeo6r4UyJV0WMuUZ08vo6BFytszwqwrs8HFOAQNS7pHJi
+         6cRVDOPeufJF05Q9PlLRX55WOrZKhE8cAdaSrWzQAZofDNngvE3bh+Sq2r/t2wBkm+Rw
+         c6BMI7vMeQmM2uCpSjYTibKWWDJlk7VnfLe47XXzvMpkNMiY8jWonFKY1vyk+ORuFGbL
+         QyI3NKvXYI+CgUdUiTCfVuruFQMSEV+Jk96LXw7pgjgQy2IB2Wi1Ef6WejJgtEEH+06/
+         UYTw==
+ARC-Authentication-Results: i=3; mx.google.com;
+       dkim=pass header.i=@illinois.edu header.s=campusrelays header.b=XvfS8Hwi;
+       arc=pass (i=2 spf=pass spfdomain=illinois.edu dkim=pass dkdomain=illinois.edu dmarc=pass fromdomain=illinois.edu);
+       spf=pass (google.com: domain of donnacox@illinois.edu designates 192.17.82.69 as permitted sender) smtp.mailfrom=donnacox@illinois.edu
+Return-Path: <donnacox@illinois.edu>
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12lp2047.outbound.protection.outlook.com. [104.47.66.47])
+        by mx.google.com with ESMTPS id s2si5451246pgp.207.2020.07.17.08.51.29
+        for <gohollyo@gmx.ucdavis.edu>
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 17 Jul 2020 08:51:29 -0700 (PDT)
+Received-SPF: pass (google.com: domain of donnacox@illinois.edu designates 192.17.82.69 as permitted sender) client-ip=192.17.82.69;
+Authentication-Results: mx.google.com;
+       dkim=pass header.i=@illinois.edu header.s=campusrelays header.b=XvfS8Hwi;
+       arc=pass (i=2 spf=pass spfdomain=illinois.edu dkim=pass dkdomain=illinois.edu dmarc=pass fromdomain=illinois.edu);
+       spf=pass (google.com: domain of donnacox@illinois.edu designates 192.17.82.69 as permitted sender) smtp.mailfrom=donnacox@illinois.edu
+ARC-Seal: i=2; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=pass;
+ b=djXQCnLQSTnJBjmcuCccmW9IjDU9RNVI2kVdih/QJ+P2+fjBP18wawhU+79AxQkk/I+rkevas8FP1Mgne9Foi0xfBk01hL5Z7QMWhuGEXAS4YR4br0pipeeiy9lLg8Wog6RwESpz24vr3gQKJV3069JeC/prFDQgOi7oFzvmpaTd3upTWUp2v6ODVzj1Wynm8m2NwGAyn6m8fXffs8xNorhwqlGMSpRAC3kjyZUiu5BIAJbzp0OTvaZ4irg1KDCqS6E7fX3BgDbDWNTlfliwkiEM0j0HU9xfF0yF4TIvInhCGBHrbpqqTqY3s7hwgawP20aXFWQ/LqW9dzfQD/7XfA==
+ARC-Message-Signature: i=2; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=mSzehJ1UoPgpWGZJjuoEiEmrUFNKw46S6lBJ9lAEFmE=;
+ b=l7VRBqLw07UHE0EvGy4hnJYMMVg8CR6QQLh4ONAq+LEThg/bKe2niAT05oeqVbccoMutqGXhshVlOAbcx94QgLxURq7lNYXVZ5/8bMh0ERcoA8RiflX4hp8l3EixJNAUVhdTLLuK3/LDFWYspXb0o70pInkVAJNQjiGViSCPuYsUj+rEH9zy63cbL9uqvkxAZ4FktG3qX3gS253e9uRa06iTzedDwAowstHpHxUgt/cV83XqpGvrq2xGz+mMBALNR3shHNHMtHhXoEIDwaWXYT/KgAlASH5YJ4o5LigGMXU0oaHtlipxnSLISt2H5uITBWVJ3RrDZC44K+s3E+KAwQ==
+ARC-Authentication-Results: i=2; mx.microsoft.com 1; spf=pass (sender ip is
+ 192.17.82.69) smtp.rcpttodomain=ucdavis.edu smtp.mailfrom=illinois.edu;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=illinois.edu;
+ dkim=pass (signature was verified) header.d=illinois.edu; arc=pass (0 oda=1
+ ltdi=1 spf=[1,1,smtp.mailfrom=illinois.edu] dkim=[1,1,header.d=illinois.edu]
+ dmarc=[1,1,header.from=illinois.edu])
+Received: from MWHPR15CA0058.namprd15.prod.outlook.com (2603:10b6:301:4c::20)
+ by BN6PR08MB3425.namprd08.prod.outlook.com (2603:10b6:405:66::29) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3174.20; Fri, 17 Jul
+ 2020 15:51:25 +0000
+Received: from CO1NAM05FT003.eop-nam05.prod.protection.outlook.com
+ (2603:10b6:301:4c:cafe::9a) by MWHPR15CA0058.outlook.office365.com
+ (2603:10b6:301:4c::20) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3195.17 via Frontend
+ Transport; Fri, 17 Jul 2020 15:51:25 +0000
+Authentication-Results: spf=pass (sender IP is 192.17.82.69)
+ smtp.mailfrom=illinois.edu; ucdavis.edu; dkim=pass (signature was verified)
+ header.d=illinois.edu;ucdavis.edu; dmarc=pass action=none
+ header.from=illinois.edu;compauth=pass reason=100
+Received-SPF: Pass (protection.outlook.com: domain of illinois.edu designates
+ 192.17.82.69 as permitted sender) receiver=protection.outlook.com;
+ client-ip=192.17.82.69; helo=illinois.edu;
+Received: from illinois.edu (192.17.82.69) by
+ CO1NAM05FT003.mail.protection.outlook.com (10.152.96.108) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.3216.9 via Frontend Transport; Fri, 17 Jul 2020 15:51:24 +0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=illinois.edu; h=from : to : cc :
+ subject : date : message-id : references : in-reply-to : content-type :
+ mime-version; s=campusrelays;
+ bh=mSzehJ1UoPgpWGZJjuoEiEmrUFNKw46S6lBJ9lAEFmE=;
+ b=XvfS8HwiWv+UwawQvqmJtURP5ABXi3nbl0traP32InkJh98yJ0R+54IpVGvUrPbW89bs
+ B+0g2M6wlZuLThATyxNvo/zZOxQxgPF1ZsolLNEGip2ZElBCppzBBJ8Io9ZQstQe83Of
+ xu2lBu5geYeikWbGwethcYnpAJ6z6aWXMlAJ81fj9Rh8va8z0RfMbV3niwWpvm4MWIWm
+ +dYJI7x5p43eArMwonIzC95k3zLLHVe0JBc7K8BQH11mGLdeRjjaBeZdmCNyrMJIUqH+
+ 9oaLOzJR5dXjDoZa0YizJLPSz/2YeSHqjKjP9IsjniBMRtAj6rou8E+XWtHBMAMUAiKF Pg== 
+Received: from NAM02-BL2-obe.outbound.protection.outlook.com (mail-bl2nam02lp2052.outbound.protection.outlook.com [104.47.38.52])
+	by relays-agent01.techservices.illinois.edu (8.16.0.42/8.16.0.42) with ESMTPS id 06HFpLJt031990
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
+	for <gohollyday@ucdavis.edu>; Fri, 17 Jul 2020 10:51:22 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=hRpp9fNhwhEjeOJI+MNitXE2xSuS45q8MO/szmfId/t8e3s4mlJ2f/iHAAKOFJoefcuI0XdgNSa8Vd3KkakvrNJlwuiwg9qRY3gyo7F7jP9MzMdiaXslqpE8u4Nebf/TCLFrx81gWq/qyHsLTDazHfXdXvFwtWaqgsh2Q9auxvV3AZRU8TFvZVlz68J/QQ1SEj5J0Dp/0330AF/WucYa3NrHuILjtJX24NBkOhHsOWUEpgJsf+G48AVkFlugy8ksx8dMO0H2aCIk8d9ZhF+OMfmPNuLM6UbCUZG5auki3OzM7khi/5p25UwDhm2CtkHLUuXU/ujq6yzdyLpB0StPNA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=mSzehJ1UoPgpWGZJjuoEiEmrUFNKw46S6lBJ9lAEFmE=;
+ b=ElbbRXUDVZUa0zCKFcJFZw2uOEDOnkzIQyG+4yTnIadDaHx8C0Yf7TFBjFFnJkGHqffCxR9e345CPbOcwXv5TWnfO5pUY9wFMOnCth34TCnqUovrsx7RYpYWT1BK4DPxXrE4Qkn3Xs/FqWckXoSNDj2bv5/IfgjTaFkN4rMeKxa+cnLpGjWyjOGUcWp4Eod/Nsokj5W+Vp9axGScAxJRcf+uPvnXyTzJz3SOHbuRHLm3GgZPEFjBh5eUkGERJ4cMqdVvN9zle52u2rJGrVXgcKBbhJ5KRvp28CPar354uU+6/yrsFhBalxzRzgnyK+hOhCfrpir7mhboH3r5OVqDXA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=illinois.edu; dmarc=pass action=none header.from=illinois.edu;
+ dkim=pass header.d=illinois.edu; arc=none
+Received: from DM6PR11MB4563.namprd11.prod.outlook.com (2603:10b6:5:28e::23)
+ by DM6PR11MB3179.namprd11.prod.outlook.com (2603:10b6:5:5e::26) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3174.21; Fri, 17 Jul
+ 2020 15:51:20 +0000
+Received: from DM6PR11MB4563.namprd11.prod.outlook.com
+ ([fe80::5511:20b4:4747:d98a]) by DM6PR11MB4563.namprd11.prod.outlook.com
+ ([fe80::5511:20b4:4747:d98a%3]) with mapi id 15.20.3195.022; Fri, 17 Jul 2020
+ 15:51:20 +0000
+From: "Cox, Donna J" <donnacox@illinois.edu>
+To: Gigja Hollyday <gohollyday@ucdavis.edu>
+CC: "Aleo, Patrick David" <paleo2@illinois.edu>,
+        "Cox, Donna J"
+	<donnacox@illinois.edu>
+Subject: PLEASE USE CREDITS!!!   Permission to Reuse Simulations of
+ Moon-forming Impacts
+Thread-Topic: PLEASE USE CREDITS!!!   Permission to Reuse Simulations of
+ Moon-forming Impacts
+Thread-Index: AQHWXFIdiqaIk0e8F0GvlTG9kt/GkA==
+Date: Fri, 17 Jul 2020 15:51:20 +0000
+Message-ID:
+ <DM6PR11MB4563DFE63035A5468B857FABA57C0@DM6PR11MB4563.namprd11.prod.outlook.com>
+References:
+ <1860424F-87CB-405B-A62D-C2506E7BE5A4@ucdavis.edu>,<DM6PR11MB45635AE30AC97FA7E14920ACA57C0@DM6PR11MB4563.namprd11.prod.outlook.com>
+In-Reply-To:
+ <DM6PR11MB45635AE30AC97FA7E14920ACA57C0@DM6PR11MB4563.namprd11.prod.outlook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+Authentication-Results-Original: ucdavis.edu; dkim=none (message not signed)
+ header.d=none;ucdavis.edu; dmarc=none action=none header.from=illinois.edu;
+x-originating-ip: [98.212.152.152]
+x-ms-publictraffictype: Email
+X-MS-Office365-Filtering-Correlation-Id: aec9fd14-ee01-4042-1851-08d82a694268
+x-ms-traffictypediagnostic: DM6PR11MB3179:|BN6PR08MB3425:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs:
+ <DM6PR11MB31792955F031716055402CBAA57C0@DM6PR11MB3179.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;OLM:9508;
+x-ms-exchange-senderadcheck: 1
+X-Microsoft-Antispam-Untrusted: BCL:0;
+X-Microsoft-Antispam-Message-Info-Original:
+ hc6t5JGMhdLKbA9J4MF/KtV2RfNxbDGNd72iHjO4WyMVEZhhcHcKPRrLNsSEqVYsgRznsW4eSHQGi4Fqzi3ZmtCc4WTlbb0eBhcYOhu8A0cx4fVIk0SpPCqZbKU/IdWdLJFbGas6Qxa20EotZbjE5KgcmJvcUZOBqu6SRQDasD2iDB/7/ywfuCPGag1OO5tbo/Q4V7bbKG7U0EIiGpaaE0N4j+50VfDWFC9QEarz+3IJJ9V5JMT17lmHBeLAfZIvX379JcBTVJsCAQsv1pxIvzYOiD7tcmudOk7SXo7zfLaFvsKQ3w1p0L0mQ2xDDM2hn+7V5h1XplceHy0MGeip0caM25ewocvyGAuF6mwWjk6pd/ICruDxMYHQ+MgBhEdISzYuwbn/CZKa3Co5PYhBl1X5MEbj4R7lwZ0zwuaYumm/rU6dIIzXuPETdk02LYFz+wNtLX7hXA6/fceGzDe6Wg==
+X-Forefront-Antispam-Report-Untrusted:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB4563.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(39860400002)(396003)(376002)(346002)(366004)(136003)(66946007)(91956017)(66556008)(66476007)(76116006)(5660300002)(66446008)(64756008)(8676002)(2906002)(316002)(296002)(52536014)(4326008)(86362001)(786003)(26005)(6916009)(19627405001)(2940100002)(54906003)(6506007)(55016002)(9686003)(53546011)(7696005)(8936002)(71200400001)(33656002)(966005)(478600001)(75432002)(107886003)(186003)(166002)(83380400001)(204823002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata:
+ 6NvK5s+n5DjTrP69DefIZ5efGI3dymBbsJjiNHD2/s4tGD+38Gp2GwrQkVkQ+6Pz6W8RXRoacVP3JCocNNAnFSpxR9oi9d7uhN1q4W35jQl4EVqGjG10mRfSEAWKTCauVWxVrgzGAnr5Pg2GLNd+xozyC6KIY5txTzJ0dDgt9ZA6ah1qVt50rbGbSpYJLQ0hRmzkwCIE1bwCO05yH7QQPpa5a9p6BNyI2TuyxF97eO58znhr15BXf8PnWGNdQE4JEFFOwetaCqq4C1YGDnbMbCmnuUj0zqbcNuK6R9IM9VB77Rkt8HC4/X7AosjaLU9P5+nXbqDf310japMW8NXz/jG8OlGA7HO60TnP0WGyJbTMn2YVA/wDZQN3uDIF1+GWOyC6dwND/hRE6OtBNv8E2tmo/ZMpGU3jVVwDCIDO1oBkFp72SjsYs3BGm4r5kDY387QfVBQ8DWw55IAdy6Z36LdtRtjPzoMq4G8OBA/e42nhkr8jw14u4KInBfI9TXAp
+Content-Type: multipart/alternative;
+	boundary="_000_DM6PR11MB4563DFE63035A5468B857FABA57C0DM6PR11MB4563namp_"
+MIME-Version: 1.0
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR11MB3179
+X-Spam-Details: rule=cautious_plus_nq_notspam policy=cautious_plus_nq score=0 clxscore=1015
+ phishscore=0 adultscore=0 suspectscore=0 priorityscore=1501 bulkscore=0
+ mlxlogscore=999 malwarescore=0 spamscore=0 impostorscore=0
+ lowpriorityscore=0 mlxscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2006250000 definitions=main-2007170114
+X-Spam-Score: 0
+X-Spam-OrigSender: donnacox@illinois.edu
+X-Spam-Bar:
+Return-Path: donnacox@illinois.edu
+X-EOPAttributedMessage: 0
+X-EOPTenantAttributedMessage: a8046f64-66c0-4f00-9046-c8daf92ff62b:0
+X-MS-Exchange-Transport-CrossTenantHeadersStripped:
+ CO1NAM05FT003.eop-nam05.prod.protection.outlook.com
+X-Forefront-Antispam-Report:
+	CIP:192.17.82.69;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:illinois.edu;PTR:relays-agent01.techservices.illinois.edu;CAT:NONE;SFTY:;SFS:(4636009)(4006050)(75432002)(2940100002)(336012)(19627405001)(52536014)(966005)(8636004)(26005)(7636003)(86362001)(107886003)(54906003)(6506007)(83290400002)(7696005)(9686003)(5660300002)(30864003)(83380400001)(1096003)(356005)(8676002)(53546011)(33656002)(83310400002)(83300400002)(83280400002)(4326008)(55016002)(75640400001)(83320400002)(6862004)(34756004)(166002)(204823002);DIR:INB;SFP:;
+X-MS-Office365-Filtering-Correlation-Id-Prvs:
+ 2d176af1-59cd-43c6-832c-08d82a693fc8
+X-LD-Processed: a8046f64-66c0-4f00-9046-c8daf92ff62b,ExtFwd
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	=?Windows-1252?Q?kB85O86wcZYd8yAyvo6kYBWHt5Q9kP8MkeVsHw8mjTlp4SDSGQ2MH+N9?=
+ =?Windows-1252?Q?ybj2fJPJhsN4BictkQKpKon6QKk2ww1BC68QwNDOR8P0ZnZO1rXUVhmy?=
+ =?Windows-1252?Q?UeD6iMiaQpQvtPTsYlhuGUx5854XICl8TGNzZna5nb3B1KFjxg3lMVnq?=
+ =?Windows-1252?Q?uqB4Xn93Iv6zH9/aoFRa+MAuNZxSkxmaOgjz4y9qfnXrn3gzXcAjoRJ3?=
+ =?Windows-1252?Q?1A8hMvgAfxzsv3grqmWClWG/RVVhNbuNrI+8UDRjnELMt0cjUBqrSfkS?=
+ =?Windows-1252?Q?ZRfGr9Xd6A537VwcmqR2hD1wPytb7H3Xn7eUG3+K7VOdPks27YfOHPx5?=
+ =?Windows-1252?Q?ttnIjzi68iK2Dqi6vrDA0/fcWZR7w+55eL16U6ucWdIl0of7YhyWm55c?=
+ =?Windows-1252?Q?e755oHqvt0jwZ3jSvkqkq8LFNW95hW8VeoCesc39uWLxjNcQVGBPGz0j?=
+ =?Windows-1252?Q?0M5utZZae9U+DxoaZGKFOCPX9z41RNSNXfuwWxVJTurVVGiH59EwgpuU?=
+ =?Windows-1252?Q?pw8T/5h0ZuPIu20yF+gbGPG/4oWGM1S4U8zrgB/jOgj7N7j9OoYcA4sK?=
+ =?Windows-1252?Q?OnX3x2PUh80A737VHoHadyEiPWUM0wCmPGLYLQ2rIsZl6BHJVJJ2kmNh?=
+ =?Windows-1252?Q?AGTlyvM1UYIf/kErq5UG7JTXOkkOVlims60oi93LXZEQvY7lGs3YdSzi?=
+ =?Windows-1252?Q?PDYehskuEMN6fulxrI2/1eUh5czUkBGL0XwG99w3kYaec415ht5Ug1bG?=
+ =?Windows-1252?Q?tTmttQ+2aFfiRZPwT+DjVUXa4rc/3p+3vu5kUuVdWS4WaBJJcfKKTuIq?=
+ =?Windows-1252?Q?JKKGg0BusByKd6ugNi4kIkkvqKibzvNGidxduoMhR392hGtmhELVITWf?=
+ =?Windows-1252?Q?/1Jy47aLxbZ9z9s+WrJOoF6EEF73TBtwnCGoXTEZq8aKebs18H3kx3Bi?=
+ =?Windows-1252?Q?A166MxaqpdhEH7iyTk0Ep+Eh6lTLxH+RJTZqxcLZBCdxaedE5YJZFJmI?=
+ =?Windows-1252?Q?VK48FKl7nyjBqbOI15MIxCSrc/GHcHNViWQ3VIvjWCVOH0lmoEgYvIyn?=
+ =?Windows-1252?Q?hZWRyBwSMFZPnx29E+buc+2Q+W9Gd6W5nbMWXI9d1pNp5gi4d5VCODM5?=
+ =?Windows-1252?Q?O9CjRWsRfbzsT66XD7t/aSygH2BFFL8jrtPlbuANPLwmyuSd8AADgjdx?=
+ =?Windows-1252?Q?sIYMUz+S1+zBIvJ8XfJAK2mOT8OST9bp+QVF05S3NqEH/hCXelzqnj3Z?=
+ =?Windows-1252?Q?HCUsLC47yprjU4W/4arqTnYHTCPfYyOlJG1hil2Qf055O/ijVzl56Ksf?=
+ =?Windows-1252?Q?WhNTxRwqzY3ha+KZX3gG+1GaCJV2u71eDP5EmsySlHoQ/CdV?=
+X-ExternalRecipientOutboundConnectors: a8046f64-66c0-4f00-9046-c8daf92ff62b
+X-MS-Exchange-ForwardingLoop:
+	gohollyday@ucdavis.edu;a8046f64-66c0-4f00-9046-c8daf92ff62b
+X-OriginatorOrg: ucdavis365.onmicrosoft.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Jul 2020 15:51:24.5086
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: aec9fd14-ee01-4042-1851-08d82a694268
+X-MS-Exchange-CrossTenant-Id: a8046f64-66c0-4f00-9046-c8daf92ff62b
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM05FT003.eop-nam05.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: Internet
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR08MB3425
+
+--_000_DM6PR11MB4563DFE63035A5468B857FABA57C0DM6PR11MB4563namp_
+Content-Type: text/plain; charset="Windows-1252"
+Content-Transfer-Encoding: quoted-printable
+
+Dear Gigja,
+I give you my permission IF you use the proper credits and attributions for=
+ the Moon-forming impacts.  When I went to your YouTube video below, I real=
+ized that this had been ripped, and did not show proper credits including N=
+SF.
+
+Here's the NSF CADENS project that funded it:  http://www.ncsa.illinois.edu=
+/enabling/vis/cadens/documentary/birth_of_planet_earth
+
+
+Please use these Credits: Robin Canup, Southwest Research Institute. Visual=
+ization by Advanced Visualization Lab, National Center for Supercomputing A=
+pplications, U. of Illinois.
+
+funded in part by the National Science Foundation
+
+The Collision that Formed the Moon  Visualization Excerpt<https://mediaspac=
+e.illinois.edu/media/t/1_f9bmmfsu> (Opens in new tab)
+If you need a full large image of the video, we can provide higher resoluti=
+on for print or playback.  Here's another popular explanation.  Theia, a hy=
+pothesized planet in the ancient solar system, slams into the Earth. Earth =
+will soon be enveloped in vaporized rock, some of it hotter than the surfac=
+e of the sun. Theia doesn=92t survive the impact =96 its remains become mix=
+ed with debris from Earth, and are either flung out into space or become pa=
+rt of the Earth-Moon system. In the first 24 hours, some of the collision d=
+ebris coalesces into what will become the Moon. Remaining material will swi=
+rl around Earth for as much as a century, gradually accumulating onto the M=
+oon, or falling back to Earth.  https://mediaspace.illinois.edu/media/t/1_f=
+9bmmfsu
+[http://cdnapi.kaltura.com/p/1329972/sp/132997200/thumbnail/entry_id/1_f9bm=
+mfsu/width/560]<https://mediaspace.illinois.edu/media/t/1_f9bmmfsu>
+Birth of Planet Earth: Collision that formed the Moon<https://mediaspace.il=
+linois.edu/media/t/1_f9bmmfsu>
+Narrated by Richard Dormer. Birth of Planet Earth tells the twisted tale of=
+ our planet=92s origins. Scientists now believe that our galaxy is filled w=
+ith solar systems, including up to a billion planets roughly the size of ou=
+r own. The film employs advanced, data-driven, cinematic-quality visualizat=
+ions to explore some of the greatest questions in science today: How did Ea=
+rth become a living planet in the wake of our solar system=92s violent birt=
+h? What does its history tell us about our chances of finding other worlds =
+that are truly Earth-like? Theia slams into the Earth. Earth will soon be e=
+nveloped in vaporized rock, some of it hotter than the surface of the sun. =
+Theia doesn=92t survive the impact =96 its remains become mixed with debris=
+ from Earth, and are either flung out into space or become part of the Eart=
+h-Moon system. Credit: Robin Canup, Southwest Research Institute.Visualizat=
+ion by Advanced Visualization Lab, National Center for Supercomputing Appli=
+cations, U. of Illinois.
+mediaspace.illinois.edu
+
+
+
+________________________________
+From: Cox, Donna J <donnacox@illinois.edu>
+Sent: Friday, July 17, 2020 10:43 AM
+To: Gigja Hollyday <gohollyday@ucdavis.edu>
+Cc: Aleo, Patrick David <paleo2@illinois.edu>
+Subject: Re: Requesting Permission to Reuse Simulations of Moon-forming Imp=
+acts
+
+Gigja
+yes, you have my permission to use the visualization for your academic rese=
+arch.  Keep this email as it will serve as your permission.
+
+I also copy a PhD student in Astronomy here at University of Illinois.  I t=
+hought it would be good to connect you both since you are working on relate=
+d research.
+
+Donna
+
+
+
+
+Professor Donna J. Cox, MFA, PhD
+
+First Michael Aiken Chair
+
+Director Advanced Visualization Lab (AVL),
+
+Professor School of Art and Design
+
+Director NCSA eDREAM Institute
+
+National Center for Supercomputing Applications (NCSA),
+
+University of Illinois at Urbana-Champaign
+
+Culture&Society Working Group Lead, Discovery Partners Institute (DPI)
+
+Co-editor and contributor New Media Futures: the Rise of Women in the Digit=
+al Arts (UI Press, 2018)
+
+
+________________________________
+From: Gigja Hollyday <gohollyday@ucdavis.edu>
+Sent: Friday, July 17, 2020 3:16 AM
+To: Cox, Donna J <donnacox@illinois.edu>
+Subject: Requesting Permission to Reuse Simulations of Moon-forming Impacts
+
+Hi Dr. Cox,
+
+I am a master=92s student of Dr. Sarah Stewart and I am finishing up my the=
+sis. My thesis focuses on explaining the physics of synestias and of moon f=
+ormation within synestias at a level that undergraduates with some exposure=
+ to physics could understand. My work will be published as both a formal (o=
+nline) thesis on ProQuest ETD (via University of California, Davis) and as =
+interactive Jupyter Notebooks on GitHub (user gohollyo repository Synestia)=
+.
+
+I would really like to include the Moon-forming videos the Advanced Visuali=
+zation Lab created from Robin M. Canup=92s (https://www.youtube.com/watch?v=
+=3DPnhflL7-I3I&list=3DFLQqDSwCRG0WrnlZaIRCd-_Q&index=3D7) and Sarah T. Stew=
+art=92s (https://www.youtube.com/watch?v=3D7e_6oyROHCU) research. I plan on=
+ publishing the videos in the Jupyter Notebooks and stills from the videos =
+in my thesis.
+
+I=92m not sure who to ask for copyright permission to reuse the simulations=
+ you worked on, so I figured you might be a good person to ask.
+
+Please let me know if you have any questions and what you think. Hope to he=
+ar from you soon.
+
+Best,
+Gigja Hollyday
+
+M.S. Geology Summer 2020
+Department of Earth and Planetary Sciences
+University of California, Davis
+
+
+--_000_DM6PR11MB4563DFE63035A5468B857FABA57C0DM6PR11MB4563namp_
+Content-Type: text/html; charset="Windows-1252"
+Content-Transfer-Encoding: quoted-printable
+
+<html>
+<head>
+<meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3DWindows-1=
+252">
+<style type=3D"text/css" style=3D"display:none;"> P {margin-top:0;margin-bo=
+ttom:0;} </style>
+</head>
+<body dir=3D"ltr">
+<div style=3D"font-family: Calibri, Arial, Helvetica, sans-serif; font-size=
+: 12pt; color: rgb(0, 0, 0);">
+Dear Gigja,</div>
+<div style=3D"font-family: Calibri, Arial, Helvetica, sans-serif; font-size=
+: 12pt; color: rgb(0, 0, 0);">
+I give you my permission IF you use the proper credits and attributions for=
+ the Moon-forming impacts.&nbsp; When I went to your YouTube video below, I=
+ realized that this had been ripped, and did not show proper credits includ=
+ing NSF.</div>
+<div style=3D"font-family: Calibri, Arial, Helvetica, sans-serif; font-size=
+: 12pt; color: rgb(0, 0, 0);">
+<br>
+</div>
+<div style=3D"font-family: Calibri, Arial, Helvetica, sans-serif; font-size=
+: 12pt; color: rgb(0, 0, 0);">
+Here's the NSF CADENS project that funded it:&nbsp; <a href=3D"http://www.n=
+csa.illinois.edu/enabling/vis/cadens/documentary/birth_of_planet_earth" id=
+=3D"LPNoLP529255">
+http://www.ncsa.illinois.edu/enabling/vis/cadens/documentary/birth_of_plane=
+t_earth</a></div>
+<div style=3D"font-family: Calibri, Arial, Helvetica, sans-serif; font-size=
+: 12pt; color: rgb(0, 0, 0);">
+<br>
+</div>
+<div style=3D"font-family: Calibri, Arial, Helvetica, sans-serif; font-size=
+: 12pt; color: rgb(0, 0, 0);">
+<p><i>Please use these Credits: Robin Canup, Southwest Research Institute. =
+Visualization by Advanced Visualization Lab, National Center for Supercompu=
+ting Applications, U. of Illinois.</i></p>
+<p><i>funded in part by the National Science Foundation<br>
+</i></p>
+<h5><b>The Collision that Formed the Moon</b><a href=3D"https://mediaspace.=
+illinois.edu/media/t/1_f9bmmfsu" target=3D"_blank">&nbsp; Visualization Exc=
+erpt</a> (Opens in new tab)</h5>
+</div>
+<div>
+<div id=3D"appendonsend"></div>
+<div style=3D"font-family:Calibri,Arial,Helvetica,sans-serif; font-size:12p=
+t; color:rgb(0,0,0)">
+<span>If you need a full large image of the video, we can provide higher re=
+solution for print or playback.&nbsp; Here's another popular explanation.&n=
+bsp; Theia, a hypothesized planet in the ancient solar system,
+</span>slams into the Earth.<span> </span>Earth will soon be enveloped in v=
+aporized rock, some of it hotter than the surface of the sun.
+<span></span>Theia doesn=92t survive the impact =96 its remains become mixe=
+d with debris from Earth, and are either flung out into space or become par=
+t of the Earth-Moon system. In the first 24 hours, some of the collision de=
+bris coalesces into what will become
+ the Moon. Remaining material will swirl around Earth for as much as a cent=
+ury, gradually accumulating onto the Moon, or falling back to Earth.&nbsp;
+<a href=3D"https://mediaspace.illinois.edu/media/t/1_f9bmmfsu" id=3D"LPlnk6=
+61658">https://mediaspace.illinois.edu/media/t/1_f9bmmfsu</a><br>
+</div>
+<div id=3D"LPBorder_GTaHR0cHM6Ly9tZWRpYXNwYWNlLmlsbGlub2lzLmVkdS9tZWRpYS90L=
+zFfZjlibW1mc3U." class=3D"LPBorder383434" style=3D"width: 100%; margin-top:=
+ 16px; margin-bottom: 16px; position: relative; max-width: 800px; min-width=
+: 424px;" contenteditable=3D"false">
+<table id=3D"LPContainer383434" role=3D"presentation" style=3D"padding: 12p=
+x 36px 12px 12px; width: 100%; border-width: 1px; border-style: solid; bord=
+er-color: rgb(200, 200, 200); border-radius: 2px;">
+<tbody>
+<tr style=3D"border-spacing: 0px;" valign=3D"top">
+<td>
+<div id=3D"LPImageContainer383434" style=3D"position: relative; margin-righ=
+t: 12px; height: 135px; overflow: hidden; width: 240px;">
+<a target=3D"_blank" id=3D"LPImageAnchor383434" href=3D"https://mediaspace.=
+illinois.edu/media/t/1_f9bmmfsu"><img id=3D"LPThumbnailImageId383434" alt=
+=3D"" style=3D"display: block;" width=3D"240" height=3D"135" src=3D"http://=
+cdnapi.kaltura.com/p/1329972/sp/132997200/thumbnail/entry_id/1_f9bmmfsu/wid=
+th/560"></a></div>
+</td>
+<td style=3D"width: 100%;">
+<div id=3D"LPTitle383434" style=3D"font-size: 21px; font-weight: 300; margi=
+n-right: 8px; font-family: &quot;wf_segoe-ui_light&quot;, &quot;Segoe UI Li=
+ght&quot;, &quot;Segoe WP Light&quot;, &quot;Segoe UI&quot;, &quot;Segoe WP=
+&quot;, Tahoma, Arial, sans-serif; margin-bottom: 12px;">
+<a target=3D"_blank" id=3D"LPUrlAnchor383434" href=3D"https://mediaspace.il=
+linois.edu/media/t/1_f9bmmfsu" style=3D"text-decoration: none; color:var(--=
+themePrimary);">Birth of Planet Earth: Collision that formed the Moon</a></=
+div>
+<div id=3D"LPDescription383434" style=3D"font-size: 14px; max-height: 100px=
+; color: rgb(102, 102, 102); font-family: &quot;wf_segoe-ui_normal&quot;, &=
+quot;Segoe UI&quot;, &quot;Segoe WP&quot;, Tahoma, Arial, sans-serif; margi=
+n-bottom: 12px; margin-right: 8px; overflow: hidden;">
+Narrated by Richard Dormer. Birth of Planet Earth tells the twisted tale of=
+ our planet=92s origins. Scientists now believe that our galaxy is filled w=
+ith solar systems, including up to a billion planets roughly the size of ou=
+r own. The film employs advanced,
+ data-driven, cinematic-quality visualizations to explore some of the great=
+est questions in science today: How did Earth become a living planet in the=
+ wake of our solar system=92s violent birth? What does its history tell us =
+about our chances of finding other
+ worlds that are truly Earth-like? Theia slams into the Earth. Earth will s=
+oon be enveloped in vaporized rock, some of it hotter than the surface of t=
+he sun. Theia doesn=92t survive the impact =96 its remains become mixed wit=
+h debris from Earth, and are either
+ flung out into space or become part of the Earth-Moon system. Credit: Robi=
+n Canup, Southwest Research Institute.Visualization by Advanced Visualizati=
+on Lab, National Center for Supercomputing Applications, U. of Illinois.</d=
+iv>
+<div id=3D"LPMetadata383434" style=3D"font-size: 14px; font-weight: 400; co=
+lor: rgb(166, 166, 166); font-family: &quot;wf_segoe-ui_normal&quot;, &quot=
+;Segoe UI&quot;, &quot;Segoe WP&quot;, Tahoma, Arial, sans-serif;">
+mediaspace.illinois.edu</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<br>
+<div style=3D"font-family:Calibri,Arial,Helvetica,sans-serif; font-size:12p=
+t; color:rgb(0,0,0)">
+<br>
+</div>
+<div style=3D"font-family:Calibri,Arial,Helvetica,sans-serif; font-size:12p=
+t; color:rgb(0,0,0)">
+<br>
+</div>
+<hr tabindex=3D"-1" style=3D"display:inline-block; width:98%">
+<div id=3D"divRplyFwdMsg" dir=3D"ltr"><font style=3D"font-size:11pt" face=
+=3D"Calibri, sans-serif" color=3D"#000000"><b>From:</b> Cox, Donna J &lt;do=
+nnacox@illinois.edu&gt;<br>
+<b>Sent:</b> Friday, July 17, 2020 10:43 AM<br>
+<b>To:</b> Gigja Hollyday &lt;gohollyday@ucdavis.edu&gt;<br>
+<b>Cc:</b> Aleo, Patrick David &lt;paleo2@illinois.edu&gt;<br>
+<b>Subject:</b> Re: Requesting Permission to Reuse Simulations of Moon-form=
+ing Impacts</font>
+<div>&nbsp;</div>
+</div>
+<div dir=3D"ltr">
+<div style=3D"font-family:Calibri,Arial,Helvetica,sans-serif; font-size:12p=
+t; color:rgb(0,0,0)">
+Gigja</div>
+<div style=3D"font-family:Calibri,Arial,Helvetica,sans-serif; font-size:12p=
+t; color:rgb(0,0,0)">
+yes, you have my permission to use the visualization for your academic rese=
+arch.&nbsp; Keep this email as it will serve as your permission.</div>
+<div style=3D"font-family:Calibri,Arial,Helvetica,sans-serif; font-size:12p=
+t; color:rgb(0,0,0)">
+<br>
+</div>
+<div style=3D"font-family:Calibri,Arial,Helvetica,sans-serif; font-size:12p=
+t; color:rgb(0,0,0)">
+I also copy a PhD student in Astronomy here at University of Illinois.&nbsp=
+; I thought it would&nbsp;be good to connect you both since you are working=
+ on related research.</div>
+<div style=3D"font-family:Calibri,Arial,Helvetica,sans-serif; font-size:12p=
+t; color:rgb(0,0,0)">
+<br>
+</div>
+<div style=3D"font-family:Calibri,Arial,Helvetica,sans-serif; font-size:12p=
+t; color:rgb(0,0,0)">
+Donna</div>
+<div style=3D"font-family:Calibri,Arial,Helvetica,sans-serif; font-size:12p=
+t; color:rgb(0,0,0)">
+<br>
+</div>
+<div>
+<div style=3D"font-family:Calibri,Arial,Helvetica,sans-serif; font-size:12p=
+t; color:rgb(0,0,0)">
+<br>
+</div>
+<div id=3D"x_Signature">
+<div>
+<meta content=3D"text/html; charset=3DUTF-8">
+<div id=3D"x_divtagdefaultwrapper" dir=3D"ltr" style=3D"font-size:12pt; col=
+or:#000000; font-family:Calibri,Helvetica,sans-serif">
+<p style=3D"margin-top: 0px; margin-bottom: 0px;margin-top:0px; margin-bott=
+om:0px; margin-top:0; margin-bottom:0">
+</p>
+<p style=3D"margin-top: 0px; margin-bottom: 0px;margin-top:0px; margin-bott=
+om:0px; margin-top:0; margin-bottom:0">
+<br>
+</p>
+<p style=3D"margin-top: 0px; margin-bottom: 0px;margin-top:0px; margin-bott=
+om:0px; margin-top:0; margin-bottom:0">
+Professor Donna J. Cox, MFA, PhD</p>
+<p style=3D"margin-top: 0px; margin-bottom: 0px;margin-top:0px; margin-bott=
+om:0px; margin-top:0; margin-bottom:0">
+First Michael Aiken Chair<br>
+</p>
+<p style=3D"margin-top: 0px; margin-bottom: 0px;margin-top:0px; margin-bott=
+om:0px; margin-top:0; margin-bottom:0">
+Director Advanced Visualization Lab (AVL), <br>
+</p>
+<p style=3D"margin-top: 0px; margin-bottom: 0px;margin-top:0px; margin-bott=
+om:0px; margin-top:0; margin-bottom:0">
+<span>Professor School of Art and Design</span></p>
+<p style=3D"margin-top: 0px; margin-bottom: 0px;margin-top:0px; margin-bott=
+om:0px; margin-top:0; margin-bottom:0">
+<span><span>Director NCSA eDREAM Institute</span><br>
+</span></p>
+<p style=3D"margin-top: 0px; margin-bottom: 0px;margin-top:0px; margin-bott=
+om:0px; margin-top:0; margin-bottom:0">
+National Center for Supercomputing Applications (NCSA),</p>
+<p style=3D"margin-top: 0px; margin-bottom: 0px;margin-top:0px; margin-bott=
+om:0px; margin-top:0; margin-bottom:0">
+<span>University of Illinois at Urbana-Champaign</span><br>
+</p>
+<p style=3D"margin-top: 0px; margin-bottom: 0px;margin-top:0px; margin-bott=
+om:0px; margin-top:0; margin-bottom:0">
+Culture&amp;Society Working Group Lead, Discovery Partners Institute (DPI)<=
+/p>
+<i></i><span>Co-editor and contributor</span> <i>New Media Futures: the Ris=
+e of Women in the Digital Arts (UI Press, 2018)</i>
+<p style=3D"margin-top: 0px; margin-bottom: 0px;margin-top:0px; margin-bott=
+om:0px; margin-top:0; margin-bottom:0">
+<i></i><br>
+</p>
+</div>
+</div>
+</div>
+</div>
+<div>
+<div id=3D"x_appendonsend"></div>
+<div style=3D"font-family:Calibri,Arial,Helvetica,sans-serif; font-size:12p=
+t; color:rgb(0,0,0)">
+<br>
+</div>
+<hr tabindex=3D"-1" style=3D"display:inline-block; width:98%">
+<div id=3D"x_divRplyFwdMsg" dir=3D"ltr"><font style=3D"font-size:11pt" face=
+=3D"Calibri, sans-serif" color=3D"#000000"><b>From:</b> Gigja Hollyday &lt;=
+gohollyday@ucdavis.edu&gt;<br>
+<b>Sent:</b> Friday, July 17, 2020 3:16 AM<br>
+<b>To:</b> Cox, Donna J &lt;donnacox@illinois.edu&gt;<br>
+<b>Subject:</b> Requesting Permission to Reuse Simulations of Moon-forming =
+Impacts</font>
+<div>&nbsp;</div>
+</div>
+<div class=3D"x_BodyFragment"><font size=3D"2"><span style=3D"font-size:11p=
+t">
+<div class=3D"x_PlainText">Hi Dr. Cox,<br>
+<br>
+I am a master=92s student of Dr. Sarah Stewart and I am finishing up my the=
+sis. My thesis focuses on explaining the physics of synestias and of moon f=
+ormation within synestias at a level that undergraduates with some exposure=
+ to physics could understand. My work
+ will be published as both a formal (online) thesis on ProQuest ETD (via Un=
+iversity of California, Davis) and as interactive Jupyter Notebooks on GitH=
+ub (user gohollyo repository Synestia).<br>
+<br>
+I would really like to include the Moon-forming videos the Advanced Visuali=
+zation Lab created from Robin M. Canup=92s (<a href=3D"https://www.youtube.=
+com/watch?v=3DPnhflL7-I3I&amp;list=3DFLQqDSwCRG0WrnlZaIRCd-_Q&amp;index=3D7=
+">https://www.youtube.com/watch?v=3DPnhflL7-I3I&amp;list=3DFLQqDSwCRG0WrnlZ=
+aIRCd-_Q&amp;index=3D7</a>)
+ and Sarah T. Stewart=92s (<a href=3D"https://www.youtube.com/watch?v=3D7e_=
+6oyROHCU">https://www.youtube.com/watch?v=3D7e_6oyROHCU</a>) research. I pl=
+an on publishing the videos in the Jupyter Notebooks and stills from the vi=
+deos in my thesis.<br>
+<br>
+I=92m not sure who to ask for copyright permission to reuse the simulations=
+ you worked on, so I figured you might be a good person to ask.<br>
+<br>
+Please let me know if you have any questions and what you think. Hope to he=
+ar from you soon.<br>
+<br>
+Best,<br>
+Gigja Hollyday<br>
+<br>
+M.S. Geology Summer 2020<br>
+Department of Earth and Planetary Sciences<br>
+University of California, Davis<br>
+<br>
+</div>
+</span></font></div>
+</div>
+</div>
+</div>
+</body>
+</html>
+
+--_000_DM6PR11MB4563DFE63035A5468B857FABA57C0DM6PR11MB4563namp_--

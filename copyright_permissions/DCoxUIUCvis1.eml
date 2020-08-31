@@ -1,0 +1,416 @@
+Delivered-To: gohollyo@gmx.ucdavis.edu
+Received: by 2002:ad4:560b:0:0:0:0:0 with SMTP id ca11csp368050qvb;
+        Fri, 17 Jul 2020 08:43:23 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyhkPz8waT2yeDYPxfmVMTfr+XSyp0STQTOoKXnnfYZDCdxPqbfiEbDtECtf0T6a3xud/Ps
+X-Received: by 2002:a4a:e1b7:: with SMTP id 23mr8953228ooy.70.1595000603273;
+        Fri, 17 Jul 2020 08:43:23 -0700 (PDT)
+ARC-Seal: i=3; a=rsa-sha256; t=1595000603; cv=pass;
+        d=google.com; s=arc-20160816;
+        b=ag/o4CFFiGt8DN6PF5E+xnNA2uY1dJlPfmnzGHXckJPmfeDga+wg8Lj+6yezfatlwN
+         DySoRrUjgZCJ/l6UsSdXoxNlzyzP4YhbQq4lhuLnBa3tCiitWrAWEkj5nr8xzgw1+EXi
+         dSNdmBN1dF7ObZrldwViyST08b6aGFDQnDJKsWERV3ws5PBQFw2IKV6ABtvuGGRvgJ6a
+         2Rn7STV+IGRdkrk1/DBEKg0KSTw8xrhLVUrYLKxclI20huAQgDtaNqRuf3YspdRYdAmE
+         /fMdIdIzMT1Nt1KKYjTXziDLA3I+vv++0S/MLEeoTRSFqekiBCdX9a5bgDk9UT/Hk3Oi
+         g/fg==
+ARC-Message-Signature: i=3; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20160816;
+        h=mime-version:authentication-results-original:content-language
+         :accept-language:in-reply-to:references:message-id:date:thread-index
+         :thread-topic:subject:cc:to:from:dkim-signature;
+        bh=IcPYaViZ7zkElG3OSAjE9hZGiHh5kcYZswqbai8SF1c=;
+        b=RozTIuVT1E7fnfiXJx9dPYxYqg2tQKMzh/2//fxH3kUnFf4R3YTP+ln8xmmegBtXqh
+         ynaQDJaA1ujJfeCsQNbyB9in7poZgv0fOMsZcavwYOiHm4EuJUcW62A/CFcxGQy7zR91
+         RDSeaMl/SpZ/xY7UlYvILN83zaxCOZyRHYikh5HC4wY3d8+UXWXuOxVUisRxwkOev49q
+         Ed2K+8G17vtqP6WUSy4bTkXhpN/4Q/aQiSJ4TdolFZCXB5gTpAmlD1F+48PsV3tQEiNT
+         mGfJb1sZjmOIYjwA+s+sKy7wV/M1gwIJkN+AXJX1BMgbUfzKon7Yj+gamRH4uPU+MzJr
+         w2fw==
+ARC-Authentication-Results: i=3; mx.google.com;
+       dkim=pass header.i=@illinois.edu header.s=campusrelays header.b=O9kIstRX;
+       arc=pass (i=2 spf=pass spfdomain=illinois.edu dkim=pass dkdomain=illinois.edu dmarc=pass fromdomain=illinois.edu);
+       spf=pass (google.com: domain of donnacox@illinois.edu designates 204.93.2.5 as permitted sender) smtp.mailfrom=donnacox@illinois.edu
+Return-Path: <donnacox@illinois.edu>
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12lp2170.outbound.protection.outlook.com. [104.47.59.170])
+        by mx.google.com with ESMTPS id v11si4665152oth.26.2020.07.17.08.43.22
+        for <gohollyo@gmx.ucdavis.edu>
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 17 Jul 2020 08:43:23 -0700 (PDT)
+Received-SPF: pass (google.com: domain of donnacox@illinois.edu designates 204.93.2.5 as permitted sender) client-ip=204.93.2.5;
+Authentication-Results: mx.google.com;
+       dkim=pass header.i=@illinois.edu header.s=campusrelays header.b=O9kIstRX;
+       arc=pass (i=2 spf=pass spfdomain=illinois.edu dkim=pass dkdomain=illinois.edu dmarc=pass fromdomain=illinois.edu);
+       spf=pass (google.com: domain of donnacox@illinois.edu designates 204.93.2.5 as permitted sender) smtp.mailfrom=donnacox@illinois.edu
+ARC-Seal: i=2; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=pass;
+ b=aWaU3k9MskaEdVfW5oPJ6D/gFUf5KRA9NJMIBGSJGL2ebkwyxUgIxP6e3KqMpQx2JMgPp2dSu5DTIs/lhMGKJ7xEZrXm1NFzfIcVSYUaJUZ+RxZE+sm8RmlzYeT4aLxY/8bjcGOoafIH0EV+fk6D8W98aTv6NsWgwxh4MXNyCy4crGYTDQmqXX98vIAJ0oF3KdYEZ9OSKUjeFrSsMAfSmh9f1cIWDDGGPLaZjy6Aqxmq1IMIn/J04qAHHtV/lKfqAnZ4gJThl/xrBaeBcY8TCVSHm3AXIiTh2c/BM9x/ahY3Aucfk8IleTrsfrAqGzj9EjWITk54+4SUiAZ2t7fRnQ==
+ARC-Message-Signature: i=2; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=IcPYaViZ7zkElG3OSAjE9hZGiHh5kcYZswqbai8SF1c=;
+ b=YPE5WkH1ZAoGZ0M7Q6pbo5aTHZztayDzWv4a50M8R+ANB/7W2nBWsCS8YvAsV20RwFWGhoiO1mLemZH3BhPU7HpZKgj9BjXBLFNw5raxpM4WIaZHd+im7Tjn02btUXt4y163ana6vfwXc3/on+r8MlG2FYOTWIFbkxVwJ8JT2yTAhbvuxJVPtUYTvviRNvv2fvNBOO9l0MsbbSPQzJV7CJor2gL+efPB0eIenJ25D+LYdNkW0WbgyRr/B5X23P0Na+k+00zpr3Vt20w79bXTESoy1R+OOtslGGGxaRoa8HJtomlBybOUlsPhfAdJpS4/mxEwzf4rnXL7urrDdaLUOQ==
+ARC-Authentication-Results: i=2; mx.microsoft.com 1; spf=pass (sender ip is
+ 204.93.2.5) smtp.rcpttodomain=ucdavis.edu smtp.mailfrom=illinois.edu;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=illinois.edu;
+ dkim=pass (signature was verified) header.d=illinois.edu; arc=pass (0 oda=1
+ ltdi=1 spf=[1,1,smtp.mailfrom=illinois.edu] dkim=[1,1,header.d=illinois.edu]
+ dmarc=[1,1,header.from=illinois.edu])
+Received: from MWHPR10CA0018.namprd10.prod.outlook.com (2603:10b6:301::28) by
+ SN6PR08MB4960.namprd08.prod.outlook.com (2603:10b6:805:6e::20) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.3174.21; Fri, 17 Jul 2020 15:43:21 +0000
+Received: from CO1NAM05FT008.eop-nam05.prod.protection.outlook.com
+ (2603:10b6:301:0:cafe::a1) by MWHPR10CA0018.outlook.office365.com
+ (2603:10b6:301::28) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3195.17 via Frontend
+ Transport; Fri, 17 Jul 2020 15:43:20 +0000
+Authentication-Results: spf=pass (sender IP is 204.93.2.5)
+ smtp.mailfrom=illinois.edu; ucdavis.edu; dkim=pass (signature was verified)
+ header.d=illinois.edu;ucdavis.edu; dmarc=pass action=none
+ header.from=illinois.edu;compauth=pass reason=100
+Received-SPF: Pass (protection.outlook.com: domain of illinois.edu designates
+ 204.93.2.5 as permitted sender) receiver=protection.outlook.com;
+ client-ip=204.93.2.5; helo=illinois.edu;
+Received: from illinois.edu (204.93.2.5) by
+ CO1NAM05FT008.mail.protection.outlook.com (10.152.96.114) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.3216.9 via Frontend Transport; Fri, 17 Jul 2020 15:43:20 +0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=illinois.edu; h=from : to : cc :
+ subject : date : message-id : references : in-reply-to : content-type :
+ mime-version; s=campusrelays;
+ bh=IcPYaViZ7zkElG3OSAjE9hZGiHh5kcYZswqbai8SF1c=;
+ b=O9kIstRXW9DMuRi5+23qPaLXjfclR6gO3hkEJg6yIjf+YenbsThyN+B3Lf4lYBfnUvoe
+ HfkWw5+Hg2FnYe4VFyyygCkP5b263tAxrMU30wbJnf6fxVYm910KsWquy0yr5PeI1PeV
+ KWUNZb7QFTk61USHR2PSnQsJtud3ItAGQkm/sqM83tG6ThqCwUGrHmz8OzoWQ43siKXF
+ oB/eyfRntjtvEL+Om0MoQ02qAB7OibBHx8JrCwPbqSdrZ/IBA66/nfmIEjQOOzfgy9qi
+ lhG4BduqHiFxWfaBubqaLl7MueUfETTnXzCGAL7sUpH4tYHDcmMtwEaPQ+pL3QL6dzGO 1A== 
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10lp2102.outbound.protection.outlook.com [104.47.70.102])
+	by relays-agent02.techservices.illinois.edu (8.16.0.42/8.16.0.42) with ESMTPS id 06HFhI0S014293
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
+	for <gohollyday@ucdavis.edu>; Fri, 17 Jul 2020 10:43:18 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=B/3nWZrCW+tzXv6ZxnGSvHEyEu+Ry2cpf1JlBnkVA1ALuybWbsRetTIkVyf2KttFVSBdYSPX5cDvQ01/Ole/5cmGd1G6xBddKCd0bR0P57yPRYGhmT8JRQvMmsKjgSl9J8sWe31Go1pKzn8tpqWmDhnsPVO2dXKOkgq0xFcKd/tlZC+u6SUEBlzEZul5GqgJ0Bc92Ca9WZuIAMPJvzNW7WqqxcRoTOvGxv9Zg9d9HpR/datzNUQnWYms9Zp/NQ+JApXYxbfoFiaclPF/hc13pvAyrpmV1Uer8XZnNefmIC4ycrDE/Vb3YwMsQ5pqsa9g/chkc1t/H8bx+R7B7Okhfg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=IcPYaViZ7zkElG3OSAjE9hZGiHh5kcYZswqbai8SF1c=;
+ b=jegEWncOw9EJdiAQMz5QaeuFNNXMP1tXCV8xc+zJH185QWWJG27RhSoOrcvIzXu5vZNigR/un87xfGGTipg2F6su9NWaSBa5qzmBsOVA0ZjIAxeTRc7UdE0br++da7Fyw2vuf4oa6L6kyx39fkjSMUZkWWYtoaL5DoqOqrVm8kvKPa5scW1R7FqivZwEw289VG5RRb9mYfOO2CdvIJI/2gA66e/I5JqXhCyE/TwRX8cXYE4bPjszc1rg0V1NmWtZkzsZH5lnlaC2dMLIF+1hQwnYM/LffYtnzpXOGqSCPSYDEPU9egXxofCuCyCbAVUdhVmdhxDa2C6ewWbMx/+TVw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=illinois.edu; dmarc=pass action=none header.from=illinois.edu;
+ dkim=pass header.d=illinois.edu; arc=none
+Received: from DM6PR11MB4563.namprd11.prod.outlook.com (2603:10b6:5:28e::23)
+ by DM5PR11MB1418.namprd11.prod.outlook.com (2603:10b6:3:8::9) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.3195.17; Fri, 17 Jul 2020 15:43:17 +0000
+Received: from DM6PR11MB4563.namprd11.prod.outlook.com
+ ([fe80::5511:20b4:4747:d98a]) by DM6PR11MB4563.namprd11.prod.outlook.com
+ ([fe80::5511:20b4:4747:d98a%3]) with mapi id 15.20.3195.022; Fri, 17 Jul 2020
+ 15:43:17 +0000
+From: "Cox, Donna J" <donnacox@illinois.edu>
+To: Gigja Hollyday <gohollyday@ucdavis.edu>
+CC: "Aleo, Patrick David" <paleo2@illinois.edu>
+Subject: Re: Requesting Permission to Reuse Simulations of Moon-forming
+ Impacts
+Thread-Topic: Requesting Permission to Reuse Simulations of Moon-forming
+ Impacts
+Thread-Index: AQHWXBKPvO6q2L3Oo0yVFpGoOxnvo6kL6V7h
+Date: Fri, 17 Jul 2020 15:43:17 +0000
+Message-ID:
+ <DM6PR11MB45635AE30AC97FA7E14920ACA57C0@DM6PR11MB4563.namprd11.prod.outlook.com>
+References: <1860424F-87CB-405B-A62D-C2506E7BE5A4@ucdavis.edu>
+In-Reply-To: <1860424F-87CB-405B-A62D-C2506E7BE5A4@ucdavis.edu>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+Authentication-Results-Original: ucdavis.edu; dkim=none (message not signed)
+ header.d=none;ucdavis.edu; dmarc=none action=none header.from=illinois.edu;
+x-originating-ip: [98.212.152.152]
+x-ms-publictraffictype: Email
+X-MS-Office365-Filtering-Correlation-Id: c2fd3951-0a0f-4c9b-93b2-08d82a6821bf
+x-ms-traffictypediagnostic: DM5PR11MB1418:|SN6PR08MB4960:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs:
+ <DM5PR11MB1418A1D9849CF4033C5ED167A57C0@DM5PR11MB1418.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;OLM:8882;
+x-ms-exchange-senderadcheck: 1
+X-Microsoft-Antispam-Untrusted: BCL:0;
+X-Microsoft-Antispam-Message-Info-Original:
+ fpg3o2nmzq3P09jB9mgNBdSN/KenG0wot2oUrz4S4/s7tEP1y5Z3PrU50NnldsqJI/ehMXCRcJGm9vUBPP8CgCUZaXctX7KgHN8OGE9Im+s/dTNe+w6jFzq0x9/2yAsy44ZB6RD5wgXYGkViGAQhKD+KzUwIKj1Kwqah4N+YjGG4tk9Ve0K6HdTm7Nb4Oe8rkv+LhtBxMa9CJZd9W53txyM3fOF0OCCxcUpqfKy8HgkQteNYA7XYI24Eddx3tJdH5wSqKB+p0B9JErAv1UrH/PD3wB+IN5PZnxeEPcGVf08Tit/4vzEmgiDD4RLeUWL9J7EOFDNuZMRmGcLbca669fGYSvBy/5NI6SMU0E/1rntdm7mY0OPTp/zrVPwaQPo+pjjiDtfvvBwQZLC/LtehrA==
+X-Forefront-Antispam-Report-Untrusted:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB4563.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(366004)(346002)(39860400002)(396003)(376002)(136003)(91956017)(166002)(33656002)(76116006)(83380400001)(71200400001)(52536014)(296002)(66476007)(64756008)(9686003)(478600001)(8676002)(75432002)(55016002)(53546011)(66446008)(66556008)(5660300002)(66946007)(19627405001)(8936002)(6506007)(316002)(26005)(6916009)(4326008)(2906002)(786003)(107886003)(7696005)(186003)(86362001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata:
+ O+ImHDRptW1Gyq0y86c7/0eNBhDeZamuHr2WVaYIF6ssexd0NxJcZcduNgZJJOfqNn5gxHJ6Hp12uw1UR5dWukSplE1t3yHOpfqFZVfEvL1wH915WzKH1WskXToGZTNl8yNl5JOKRvypSXQs1+hxzOC24EkjND8lfyDwns5M7yNO5nlegp/jok1wxQmDNWfJ7qPawb/hDWJzYytA/5syTdCDP29H0uoHsudD3EX+P03wUNuh5Vb1KrsXEnNH+s+zqUvjKBaibhe+uIHLo8sJVMhMLnDPPUJ2+Kb39XgWB4Kv9i3xXDeKe+n/SUK7NZg0gzwT4/xGFmCyDQ7lJNg+35SBZOzuAVI044PgBlVJd3+oi31WTaSuKvBzPlOUBAnwaoPXclThW/zoPAYkR/ayZpzspn0HNuGm3GQcXeiGQ1PXgQ6IbaytXZTJwFgZt8QR83jxspoq24RLZjtwcJdheeCcmELOX4Bfw45F7ncgid839ZZtRY6hcU0YqNfM/FcN
+Content-Type: multipart/alternative;
+	boundary="_000_DM6PR11MB45635AE30AC97FA7E14920ACA57C0DM6PR11MB4563namp_"
+MIME-Version: 1.0
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR11MB1418
+X-Spam-Details: rule=cautious_plus_nq_notspam policy=cautious_plus_nq score=0
+ malwarescore=0 bulkscore=0 phishscore=0 impostorscore=0 mlxscore=0
+ suspectscore=0 mlxlogscore=999 adultscore=0 clxscore=1011
+ priorityscore=1501 spamscore=0 lowpriorityscore=0 classifier=spam adjust=0
+ reason=mlx scancount=1 engine=8.12.0-2006250000
+ definitions=main-2007170113
+X-Spam-Score: 0
+X-Spam-OrigSender: donnacox@illinois.edu
+X-Spam-Bar:
+Return-Path: donnacox@illinois.edu
+X-EOPAttributedMessage: 0
+X-EOPTenantAttributedMessage: a8046f64-66c0-4f00-9046-c8daf92ff62b:0
+X-MS-Exchange-Transport-CrossTenantHeadersStripped:
+ CO1NAM05FT008.eop-nam05.prod.protection.outlook.com
+X-Forefront-Antispam-Report:
+	CIP:204.93.2.5;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:illinois.edu;PTR:relays-agent02.techservices.illinois.edu;CAT:NONE;SFTY:;SFS:(4636009)(7696005)(33656002)(55016002)(75640400001)(86362001)(4006050)(52536014)(34756004)(26005)(166002)(1096003)(356005)(9686003)(7636003)(8636004)(336012)(83280400002)(107886003)(4326008)(83300400002)(83380400001)(6506007)(53546011)(6862004)(75432002)(83310400002)(83320400002)(8676002)(83290400002)(19627405001)(5660300002);DIR:INB;SFP:;
+X-MS-Office365-Filtering-Correlation-Id-Prvs:
+ b8affa20-eb8b-4ced-9fd2-08d82a682041
+X-LD-Processed: a8046f64-66c0-4f00-9046-c8daf92ff62b,ExtFwd
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	=?Windows-1252?Q?x8/tUjsYQ4qeSF03C3TDuv46lSOvU52fdXejA5MO79EK9lUWNeDiXpPu?=
+ =?Windows-1252?Q?bl95nTY0KqLAGXUXq/PL0YlxxlgZXGzEkrjZPxnWa96eX1Wz18g/qDjV?=
+ =?Windows-1252?Q?H/cKxR9DjVLDKjktqdYSlwVPxAxwKs60YoAsAYUnRps4R6cfK7bmIF3z?=
+ =?Windows-1252?Q?UbFlvQJLeKL+C4xBPpcqK70QQEs8HHi4ZQtqK0qy+qAn8fnNt+D8L+to?=
+ =?Windows-1252?Q?ufzX/nAXofZOwZk1qerWvou9DGNUZy5QHH+ZDU440CwN/Bbr9y2Y7XVu?=
+ =?Windows-1252?Q?TzgpVnmFnym3hk0Fuh7zabOncItZTq5dkDOfNIl4Qb3TnlaqSwZCbkDz?=
+ =?Windows-1252?Q?nPaXlUO5xlAE+xMn7oKJMLOCsVPN3a2iPmCECgkziuN0+dZqCfOEhEMf?=
+ =?Windows-1252?Q?6dfJ71PAKb7VfPailOVCyhJoD1DLb6bSL6MNak6iZkHayzPCzK3SBqaX?=
+ =?Windows-1252?Q?pTdJuqD+Z3psjg3hgy+Y/4AMnD90wklMAD7l8qtfHUKG4/nv2/WV3Zzk?=
+ =?Windows-1252?Q?qsMgSWl+3yTsZ7FrSij7l841xta5H/MF0SUACGzdAHjhwzsqPfduvLWg?=
+ =?Windows-1252?Q?9Ewk4FICXk5Ho99WHlIYJuyJgyuXhWSGe3QHtmRhjInJzyq7VUTRtICw?=
+ =?Windows-1252?Q?afXYr3iSkvO3BDWcNzIQsnxn/IH23lA0j+P14pEjxec5sYP9DhMrW1rs?=
+ =?Windows-1252?Q?imw8XHTALkuWw+oVdxYqbBnYn4GNjzzUPxdQjFnmm5hLlYuFWVG/QWXH?=
+ =?Windows-1252?Q?41Q/2+Kp5DDaz97ALsz1sacX1cKShsM/VEM5rtI0N0YiCbQU2eoAykEn?=
+ =?Windows-1252?Q?ubHkReB0fayUR+fi6omt06pr20wfna+Ruk89Q1PDehzwQnW9rb12GYI/?=
+ =?Windows-1252?Q?lBdTpZNSC7N76U1mdtsT0nbyayE9rQuLoRhgt8kMyImzfHksLBchjrD2?=
+ =?Windows-1252?Q?Ulfr5YCRIOrUjGbEZ9bmTiebmVy0ybRqxXVn6mp3URf+JkVb9MgjB3OK?=
+ =?Windows-1252?Q?LtP3h1QCFAiqgM8H97MB9PTcEqyWBOdjinZkhvvlVIJZFKkYhxs1pcpc?=
+ =?Windows-1252?Q?oBrxVJkaXP9p4v7iX/6/K1cAqJUWnAf0iPI/G1YuumXv50STHdZfXFNh?=
+ =?Windows-1252?Q?E2nwfGPntv5K/zgHPWdAUF2H+gvYqYi3Z66Bl0EpkvXm3fUnjU+onr2Y?=
+ =?Windows-1252?Q?xrDvzjPFmOs3Y0CgbXUi5YxFGuoxVHGdj3/zsA8MtW9kTQTqOuyZJ8aw?=
+ =?Windows-1252?Q?ZFgD6uPcubpxi9FLJz8yN63mJS0aKnD9lzm8ZnsL?=
+X-ExternalRecipientOutboundConnectors: a8046f64-66c0-4f00-9046-c8daf92ff62b
+X-MS-Exchange-ForwardingLoop:
+	gohollyday@ucdavis.edu;a8046f64-66c0-4f00-9046-c8daf92ff62b
+X-OriginatorOrg: ucdavis365.onmicrosoft.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Jul 2020 15:43:20.2294
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: c2fd3951-0a0f-4c9b-93b2-08d82a6821bf
+X-MS-Exchange-CrossTenant-Id: a8046f64-66c0-4f00-9046-c8daf92ff62b
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM05FT008.eop-nam05.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: Internet
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR08MB4960
+
+--_000_DM6PR11MB45635AE30AC97FA7E14920ACA57C0DM6PR11MB4563namp_
+Content-Type: text/plain; charset="Windows-1252"
+Content-Transfer-Encoding: quoted-printable
+
+Gigja
+yes, you have my permission to use the visualization for your academic rese=
+arch.  Keep this email as it will serve as your permission.
+
+I also copy a PhD student in Astronomy here at University of Illinois.  I t=
+hought it would be good to connect you both since you are working on relate=
+d research.
+
+Donna
+
+
+
+
+Professor Donna J. Cox, MFA, PhD
+
+First Michael Aiken Chair
+
+Director Advanced Visualization Lab (AVL),
+
+Professor School of Art and Design
+
+Director NCSA eDREAM Institute
+
+National Center for Supercomputing Applications (NCSA),
+
+University of Illinois at Urbana-Champaign
+
+Culture&Society Working Group Lead, Discovery Partners Institute (DPI)
+
+Co-editor and contributor New Media Futures: the Rise of Women in the Digit=
+al Arts (UI Press, 2018)
+
+
+________________________________
+From: Gigja Hollyday <gohollyday@ucdavis.edu>
+Sent: Friday, July 17, 2020 3:16 AM
+To: Cox, Donna J <donnacox@illinois.edu>
+Subject: Requesting Permission to Reuse Simulations of Moon-forming Impacts
+
+Hi Dr. Cox,
+
+I am a master=92s student of Dr. Sarah Stewart and I am finishing up my the=
+sis. My thesis focuses on explaining the physics of synestias and of moon f=
+ormation within synestias at a level that undergraduates with some exposure=
+ to physics could understand. My work will be published as both a formal (o=
+nline) thesis on ProQuest ETD (via University of California, Davis) and as =
+interactive Jupyter Notebooks on GitHub (user gohollyo repository Synestia)=
+.
+
+I would really like to include the Moon-forming videos the Advanced Visuali=
+zation Lab created from Robin M. Canup=92s (https://www.youtube.com/watch?v=
+=3DPnhflL7-I3I&list=3DFLQqDSwCRG0WrnlZaIRCd-_Q&index=3D7) and Sarah T. Stew=
+art=92s (https://www.youtube.com/watch?v=3D7e_6oyROHCU) research. I plan on=
+ publishing the videos in the Jupyter Notebooks and stills from the videos =
+in my thesis.
+
+I=92m not sure who to ask for copyright permission to reuse the simulations=
+ you worked on, so I figured you might be a good person to ask.
+
+Please let me know if you have any questions and what you think. Hope to he=
+ar from you soon.
+
+Best,
+Gigja Hollyday
+
+M.S. Geology Summer 2020
+Department of Earth and Planetary Sciences
+University of California, Davis
+
+
+--_000_DM6PR11MB45635AE30AC97FA7E14920ACA57C0DM6PR11MB4563namp_
+Content-Type: text/html; charset="Windows-1252"
+Content-Transfer-Encoding: quoted-printable
+
+<html>
+<head>
+<meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3DWindows-1=
+252">
+<style type=3D"text/css" style=3D"display:none;"> P {margin-top:0;margin-bo=
+ttom:0;} </style>
+</head>
+<body dir=3D"ltr">
+<div style=3D"font-family: Calibri, Arial, Helvetica, sans-serif; font-size=
+: 12pt; color: rgb(0, 0, 0);">
+Gigja</div>
+<div style=3D"font-family: Calibri, Arial, Helvetica, sans-serif; font-size=
+: 12pt; color: rgb(0, 0, 0);">
+yes, you have my permission to use the visualization for your academic rese=
+arch.&nbsp; Keep this email as it will serve as your permission.</div>
+<div style=3D"font-family: Calibri, Arial, Helvetica, sans-serif; font-size=
+: 12pt; color: rgb(0, 0, 0);">
+<br>
+</div>
+<div style=3D"font-family: Calibri, Arial, Helvetica, sans-serif; font-size=
+: 12pt; color: rgb(0, 0, 0);">
+I also copy a PhD student in Astronomy here at University of Illinois.&nbsp=
+; I thought it would&nbsp;be good to connect you both since you are working=
+ on related research.</div>
+<div style=3D"font-family: Calibri, Arial, Helvetica, sans-serif; font-size=
+: 12pt; color: rgb(0, 0, 0);">
+<br>
+</div>
+<div style=3D"font-family: Calibri, Arial, Helvetica, sans-serif; font-size=
+: 12pt; color: rgb(0, 0, 0);">
+Donna</div>
+<div style=3D"font-family: Calibri, Arial, Helvetica, sans-serif; font-size=
+: 12pt; color: rgb(0, 0, 0);">
+<br>
+</div>
+<div>
+<div style=3D"font-family: Calibri, Arial, Helvetica, sans-serif; font-size=
+: 12pt; color: rgb(0, 0, 0);">
+<br>
+</div>
+<div id=3D"Signature">
+<div>
+<meta content=3D"text/html; charset=3DUTF-8">
+<div id=3D"divtagdefaultwrapper" dir=3D"ltr" style=3D"font-size:12pt; color=
+:#000000; font-family:Calibri,Helvetica,sans-serif">
+<p style=3D"margin-top: 0px; margin-bottom: 0px;margin-top:0; margin-bottom=
+:0"></p>
+<p style=3D"margin-top: 0px; margin-bottom: 0px;margin-top:0; margin-bottom=
+:0"><br>
+</p>
+<p style=3D"margin-top: 0px; margin-bottom: 0px;margin-top:0; margin-bottom=
+:0">Professor Donna J. Cox, MFA, PhD</p>
+<p style=3D"margin-top: 0px; margin-bottom: 0px;margin-top:0; margin-bottom=
+:0">First Michael Aiken Chair<br>
+</p>
+<p style=3D"margin-top: 0px; margin-bottom: 0px;margin-top:0; margin-bottom=
+:0">Director Advanced Visualization Lab (AVL),
+<br>
+</p>
+<p style=3D"margin-top: 0px; margin-bottom: 0px;margin-top:0; margin-bottom=
+:0"><span>Professor School of Art and Design</span></p>
+<p style=3D"margin-top: 0px; margin-bottom: 0px;margin-top:0; margin-bottom=
+:0"><span><span>Director NCSA eDREAM Institute</span><br>
+</span></p>
+<p style=3D"margin-top: 0px; margin-bottom: 0px;margin-top:0; margin-bottom=
+:0">National Center for Supercomputing Applications (NCSA),</p>
+<p style=3D"margin-top: 0px; margin-bottom: 0px;margin-top:0; margin-bottom=
+:0"><span>University of Illinois at Urbana-Champaign</span><br>
+</p>
+<p style=3D"margin-top: 0px; margin-bottom: 0px;margin-top:0; margin-bottom=
+:0">Culture&amp;Society Working Group Lead, Discovery Partners Institute (D=
+PI)</p>
+<i></i><span>Co-editor and contributor</span> <i>New Media Futures: the Ris=
+e of Women in the Digital Arts (UI Press, 2018)</i>
+<p style=3D"margin-top: 0px; margin-bottom: 0px;margin-top:0; margin-bottom=
+:0"><i></i><br>
+</p>
+</div>
+</div>
+</div>
+</div>
+<div>
+<div id=3D"appendonsend"></div>
+<div style=3D"font-family:Calibri,Arial,Helvetica,sans-serif; font-size:12p=
+t; color:rgb(0,0,0)">
+<br>
+</div>
+<hr tabindex=3D"-1" style=3D"display:inline-block; width:98%">
+<div id=3D"divRplyFwdMsg" dir=3D"ltr"><font style=3D"font-size:11pt" face=
+=3D"Calibri, sans-serif" color=3D"#000000"><b>From:</b> Gigja Hollyday &lt;=
+gohollyday@ucdavis.edu&gt;<br>
+<b>Sent:</b> Friday, July 17, 2020 3:16 AM<br>
+<b>To:</b> Cox, Donna J &lt;donnacox@illinois.edu&gt;<br>
+<b>Subject:</b> Requesting Permission to Reuse Simulations of Moon-forming =
+Impacts</font>
+<div>&nbsp;</div>
+</div>
+<div class=3D"BodyFragment"><font size=3D"2"><span style=3D"font-size:11pt"=
+>
+<div class=3D"PlainText">Hi Dr. Cox,<br>
+<br>
+I am a master=92s student of Dr. Sarah Stewart and I am finishing up my the=
+sis. My thesis focuses on explaining the physics of synestias and of moon f=
+ormation within synestias at a level that undergraduates with some exposure=
+ to physics could understand. My work
+ will be published as both a formal (online) thesis on ProQuest ETD (via Un=
+iversity of California, Davis) and as interactive Jupyter Notebooks on GitH=
+ub (user gohollyo repository Synestia).<br>
+<br>
+I would really like to include the Moon-forming videos the Advanced Visuali=
+zation Lab created from Robin M. Canup=92s (<a href=3D"https://www.youtube.=
+com/watch?v=3DPnhflL7-I3I&amp;list=3DFLQqDSwCRG0WrnlZaIRCd-_Q&amp;index=3D7=
+">https://www.youtube.com/watch?v=3DPnhflL7-I3I&amp;list=3DFLQqDSwCRG0WrnlZ=
+aIRCd-_Q&amp;index=3D7</a>)
+ and Sarah T. Stewart=92s (<a href=3D"https://www.youtube.com/watch?v=3D7e_=
+6oyROHCU">https://www.youtube.com/watch?v=3D7e_6oyROHCU</a>) research. I pl=
+an on publishing the videos in the Jupyter Notebooks and stills from the vi=
+deos in my thesis.<br>
+<br>
+I=92m not sure who to ask for copyright permission to reuse the simulations=
+ you worked on, so I figured you might be a good person to ask.<br>
+<br>
+Please let me know if you have any questions and what you think. Hope to he=
+ar from you soon.<br>
+<br>
+Best,<br>
+Gigja Hollyday<br>
+<br>
+M.S. Geology Summer 2020<br>
+Department of Earth and Planetary Sciences<br>
+University of California, Davis<br>
+<br>
+</div>
+</span></font></div>
+</div>
+</body>
+</html>
+
+--_000_DM6PR11MB45635AE30AC97FA7E14920ACA57C0DM6PR11MB4563namp_--

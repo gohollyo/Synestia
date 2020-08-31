@@ -44,6 +44,8 @@ There are a few smaller, bite-sized notebooks that define terms or concepts that
 * Poincarè-Wavre Theorem
 * Spherical and Cylindrical Coordinates 
 
+A few potential Moon-forming synestia example cases (output from smoothed-particle hydrodynamics simulations) are used throughout the notebooks, especially as part of the interactive plots. Refer to `Synestia_Moon_Ex_Cases.ipynb` for details about these synestia example cases.
+
 ## Science Concepts Covered
 These notebooks will touch on various science concepts: linear and angular velocity, linear and centripetal acceleration, conservation of angular momentum, gravitational forces acting on multiple bodies, non-conservative forces (gas drag), pressure gradients and hydrostatic equilibrium, material phases and phase changes, extreme thermal regimes for rocky materials, orbits (Keplerian), solid body rotation, giant impacts, deep time (early solar system), formation of moons and planets, and planetary structures (planet, moon, planetary disk, synestia).
 
@@ -66,7 +68,7 @@ In addition, these notebooks satisfy the following student learning outcomes bas
     * <i>Technological competence</i>: "Demonstrates technological literacy and skills...stays current with technological innovations"
 
 ## Acknowledgements
-I included previously published figures and videos throughout these notebooks. For each copyrighted material that appears in this thesis, I have referenced its respective source. The respective copyright owners have granted permission for their materials' use in this academic, non-profit publication. The materials have been reprinted with permission from: Donna Cox of the University of Illinois at Urbana-Champaign Visualization Center, The American Association for the Advancement of Science or AAAS (<i>Science</i>) and Robin M. Canup of Southwest Research Institute, American Geophysical Union or AGU (<i>Journal of Geophysical Research</i>) and Simon J. Lock, and Raluca Rufu.
+I included previously published figures and videos throughout these notebooks. For each copyrighted material that appears in this thesis, I have referenced its respective source. The respective copyright owners have granted permission for their materials' use in this academic, non-profit publication. The materials have been reprinted with permission from: Donna Cox of the University of Illinois at Urbana-Champaign Visualization Center, The American Association for the Advancement of Science or AAAS (<i>Science</i>) and Robin M. Canup of Southwest Research Institute, American Geophysical Union or AGU (<i>Journal of Geophysical Research</i>) and Simon J. Lock, and Raluca Rufu. Email correspondence proving permission to use these copyrighted materials is located in the folder `copyright_permissions`.
 
 ## Contact
 This set of Jupyter Notebooks is intended for non-profit educational purposes, in partial fulfillment of Gigja Hollyday's M.S. thesis in Geology at the University of California, Davis. For inquiries or feedback, please email gohollyday at ucdavis dot edu.

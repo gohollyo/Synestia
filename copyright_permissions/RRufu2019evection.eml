@@ -1,0 +1,219 @@
+Delivered-To: gohollyo@gmx.ucdavis.edu
+Received: by 2002:ad4:560b:0:0:0:0:0 with SMTP id ca11csp316969qvb;
+        Fri, 17 Jul 2020 07:34:16 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxQDU5yXsfMcekRHnSublA84+yZ9w6u2c1TXthDogkJTjGW9189dZOdMj/vj4Nz0CePBofV
+X-Received: by 2002:a63:3ec4:: with SMTP id l187mr8698897pga.371.1594996456651;
+        Fri, 17 Jul 2020 07:34:16 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1594996456; cv=none;
+        d=google.com; s=arc-20160816;
+        b=F8DfByuOiXUoJGrwa7vNyiaZ/RHpQVqJwhDb0ka8PzpHTCNQmp/pa/x6067tg86VV9
+         bhu+9QuwYSl2GhJtbNlulHojG6/G8S2eDJoAmg7WcJPEzelVqYQTbO0dNy+E+6BHwCLu
+         WXNjqFs7lO1a7bsITHo2leqTld39gU6hAN0WFK7xPwcUhIag60VSC1fyROdq0o8Aogf1
+         VLuEp9/Fu2cDZx3fexKAq92Yq7JR7IgcT4zmNth+MQ/kDE+fKvfBGmnE9nydo4tbYcD5
+         tHwPntw5kTTcM7MozSrkut2839vxnCVgnbfddJAzxMwGUKLbUQ7CIJOCzfs+xYwlPXjc
+         rXhg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20160816;
+        h=references:to:cc:in-reply-to:date:subject:mime-version:message-id
+         :from:dkim-signature:dkim-filter;
+        bh=4xS93w5Xl8B6HjtW7QwSiHSP7sJF/4DF6Bf3g9K7Ag4=;
+        b=luMsYXjK6sFY+N74EA8B4Sa2furPsqNGM/tDGnX50nEnLLJLn27HS1ytd9UD6tSne3
+         0yiIOmKasMIIbfVErZYu2lf5Gy3w/CG/ZVmPg70iAHlf8zaHMjV9KM8laiVVlIqPWJmw
+         j09LDt7CTLbSwe9lKef+turNW3IVJbLhhuztcd/bc2DJALX1QfvIEOxK+WHaeakYu2Ao
+         bs3bDZDb5H2mfhDu3ncYFyoWXgvcocq4N4qOMBnZcU/WSHvF1dvDLMpyNshIPb0qqOV4
+         DgjyhPbLXNHeIhzFIzjWGkN5z09ezujElfHg94gfuQxssufitb0OY3Z5PmCH4/oJUpUh
+         nilg==
+ARC-Authentication-Results: i=1; mx.google.com;
+       dkim=pass header.i=@boulder.swri.edu header.s=2014apr header.b=f4ldk9oO;
+       spf=pass (google.com: domain of raluca@boulder.swri.edu designates 65.241.78.58 as permitted sender) smtp.mailfrom=raluca@boulder.swri.edu
+Return-Path: <raluca@boulder.swri.edu>
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12lp2040.outbound.protection.outlook.com. [104.47.66.40])
+        by mx.google.com with ESMTPS id k9si1061706pjd.146.2020.07.17.07.34.15
+        for <gohollyo@gmx.ucdavis.edu>
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 17 Jul 2020 07:34:16 -0700 (PDT)
+Received-SPF: pass (google.com: domain of raluca@boulder.swri.edu designates 65.241.78.58 as permitted sender) client-ip=65.241.78.58;
+Authentication-Results: mx.google.com;
+       dkim=pass header.i=@boulder.swri.edu header.s=2014apr header.b=f4ldk9oO;
+       spf=pass (google.com: domain of raluca@boulder.swri.edu designates 65.241.78.58 as permitted sender) smtp.mailfrom=raluca@boulder.swri.edu
+Received: from DM5PR18CA0068.namprd18.prod.outlook.com (2603:10b6:3:22::30) by
+ CY1PR0801MB2153.namprd08.prod.outlook.com (2a01:111:e400:c615::23) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3174.22; Fri, 17 Jul
+ 2020 14:34:14 +0000
+Received: from DM3NAM05FT062.eop-nam05.prod.protection.outlook.com
+ (2603:10b6:3:22:cafe::3a) by DM5PR18CA0068.outlook.office365.com
+ (2603:10b6:3:22::30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3195.19 via Frontend
+ Transport; Fri, 17 Jul 2020 14:34:14 +0000
+Authentication-Results: spf=pass (sender IP is 65.241.78.58)
+ smtp.mailfrom=boulder.swri.edu; ucdavis.edu; dkim=pass (signature was
+ verified) header.d=boulder.swri.edu;ucdavis.edu; dmarc=bestguesspass
+ action=none header.from=boulder.swri.edu;compauth=pass reason=109
+Received-SPF: Pass (protection.outlook.com: domain of boulder.swri.edu
+ designates 65.241.78.58 as permitted sender) receiver=protection.outlook.com;
+ client-ip=65.241.78.58; helo=mail2.boulder.swri.edu;
+Received: from mail2.boulder.swri.edu (65.241.78.58) by
+ DM3NAM05FT062.mail.protection.outlook.com (10.152.98.181) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.3216.9 via Frontend Transport; Fri, 17 Jul 2020 14:34:13 +0000
+Received: from [192.168.0.8] (c-67-190-86-214.hsd1.co.comcast.net [67.190.86.214])
+	(authenticated bits=0)
+	by mail2.boulder.swri.edu (8.14.7/8.14.7) with ESMTP id 06HEYC4l030411
+	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
+	Fri, 17 Jul 2020 08:34:12 -0600
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail2.boulder.swri.edu 06HEYC4l030411
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=boulder.swri.edu;
+	s=2014apr; t=1594996452;
+	bh=4xS93w5Xl8B6HjtW7QwSiHSP7sJF/4DF6Bf3g9K7Ag4=;
+	h=From:Subject:Date:In-Reply-To:Cc:To:References:From;
+	b=f4ldk9oOMjWlJKkRtV2v+vl0T3JOLRicfOEHrBSXkjAJ+3WT/VjBE04tF+fIc4H6j
+	 XoY4tfS/Zy34DFDAObNiX5L6YuLMLWXx6LXnWjOZscwGzQlrtmZtSKGXc10j+PXgmY
+	 mpYHmuWWsoAbg7Q8UDXyO3Tl3b1E1vLKAAMMko/Y=
+From: Raluca Rufu <raluca@boulder.swri.edu>
+Message-Id: <6274E42B-3CA2-430C-AC9F-EB44E683855F@boulder.swri.edu>
+Content-Type: multipart/alternative;
+	boundary="Apple-Mail=_7CF474ED-489D-45CA-B4F1-1BC63F024AD6"
+Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.80.23.2.2\))
+Subject: Re: Permission for Reuse in Master's Thesis
+Date: Fri, 17 Jul 2020 08:34:12 -0600
+In-Reply-To: <6359BB5F-4B6C-405B-B3C2-AD583941EB33@ucdavis.edu>
+Cc: Robin Canup <robin@boulder.swri.edu>
+To: Gigja Hollyday <gohollyday@ucdavis.edu>
+References: <6359BB5F-4B6C-405B-B3C2-AD583941EB33@ucdavis.edu>
+X-Mailer: Apple Mail (2.3608.80.23.2.2)
+X-Virus-Scanned: clamav-milter 0.102.3 at mail2.boulder.swri.edu
+X-Virus-Status: Clean
+Return-Path: raluca@boulder.swri.edu
+X-EOPAttributedMessage: 0
+X-EOPTenantAttributedMessage: a8046f64-66c0-4f00-9046-c8daf92ff62b:0
+X-Forefront-Antispam-Report:
+	CIP:65.241.78.58;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail2.boulder.swri.edu;PTR:smtpout.boulder.swri.edu;CAT:NONE;SFTY:;SFS:(4636009)(336012)(26005)(107886003)(4326008)(356005)(75432002)(2616005)(956004)(6862004)(966005)(426003)(1096003)(8676002)(5660300002)(34756004)(86362001)(33656002)(166002)(4006050)(75640400001)(7636003);DIR:INB;SFP:;
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: e506591c-0ddf-49ae-ffb9-08d82a5e7a5e
+X-MS-TrafficTypeDiagnostic: CY1PR0801MB2153:
+X-LD-Processed: a8046f64-66c0-4f00-9046-c8daf92ff62b,ExtFwd
+X-MS-Exchange-Transport-Forked: True
+X-MS-Oob-TLC-OOBClassifiers: OLM:7219;
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?1lzNP38KUgesBrkI/ucrVsry9oWC8Nu+lm3cqxL7GbyVGwrXQOqu1aBmY/Yi?=
+ =?us-ascii?Q?ZotsyJX1fdNlgAwOh6pCwBvzsnaMlsxApnva+HNk7C2VWlmxA9TrRm37u3BY?=
+ =?us-ascii?Q?zNCAmeXKr5LLoL2SJWxGmR6B6ei1KY9ig3Th77pLQTEYvI56RcYQ6mfHDEvJ?=
+ =?us-ascii?Q?vrWRiDg3ZX2zIh2O08E8Esdvy2MjotRJNGdIB4LJa0Pr12+0W6Xoocf+fd31?=
+ =?us-ascii?Q?G/ur22LbNC35J9svk99nkGciKAo3NV4JWy14e1X3hIFY0sRIcs4O7RHfI2f9?=
+ =?us-ascii?Q?XxHjEFtD+++tysYqt39a0VsWAyBFcDvw+0XExX+/lSKV2Yg8LszSJ9FtbNz8?=
+ =?us-ascii?Q?wAthHepe9w+bwxdfX2wQVrex2SqpjTEiWU1B4mdFdSsJIbyRwgfFyphpGtsE?=
+ =?us-ascii?Q?9wt+3Rq2q1IVot99jrF1pD/zpwuEIam3sX2CG7cZN43HMv2IkTZXt8XJ5rFP?=
+ =?us-ascii?Q?khP+VS2BBZxOH5PioArxTn9UNnJH2DgyDim5Uz7vLNBIRh0h8GvdQvoWSeKP?=
+ =?us-ascii?Q?ti4Bnh2sYL5u+inOvNTu08+faUPCNq0ouq9rsPzznRU64fLga3Lk/MhmKgpL?=
+ =?us-ascii?Q?szZJE/dKZNeFIhN2bzV1cGLe7qM4LBZLI16mrv+4OfnkroUKlHF38Elgnnw/?=
+ =?us-ascii?Q?E9HX/jTiNZe6Z8Q9ScoKjrtY/Ysg1i8PoKFjCbdleZOaIrBfN9B51frdMjrn?=
+ =?us-ascii?Q?66eGgesgesfpxtophwrEWCHirIJjN1dtV6xX+cbGuMh7xD/QAuYpUB9t2FtY?=
+ =?us-ascii?Q?QeSwH67G9nae/qT1xqqrdkVW2Of4AvLwceuEEfqS/A4namUXiUaHmsMsPAa3?=
+ =?us-ascii?Q?AdaFV6KDXGt+FzDZenOFd9jmuxBMjAVZdcotc8TV/5KVjiqqZtdJgIg/ymVR?=
+ =?us-ascii?Q?bBpI1CqtzalS5ZyS4ABPlDwRxAPud3SSY0BqPL99NCLxgZWWQAKgVG5Mb6d2?=
+ =?us-ascii?Q?xaKe/7Nrj3MEszYipmW6l+N4z4GbJFhYfrNQjMxtxXZYWUtXYgtML+aiRplJ?=
+ =?us-ascii?Q?s0wU451h/JpASQxWnW8BfoWJf1em1HYRJbtzMD6bsDlnYDY=3D?=
+X-ExternalRecipientOutboundConnectors: a8046f64-66c0-4f00-9046-c8daf92ff62b
+X-MS-Exchange-ForwardingLoop:
+	gohollyday@ucdavis.edu;a8046f64-66c0-4f00-9046-c8daf92ff62b
+X-OriginatorOrg: ucdavis365.onmicrosoft.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Jul 2020 14:34:13.9991
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: e506591c-0ddf-49ae-ffb9-08d82a5e7a5e
+X-MS-Exchange-CrossTenant-Id: a8046f64-66c0-4f00-9046-c8daf92ff62b
+X-MS-Exchange-CrossTenant-AuthSource: DM3NAM05FT062.eop-nam05.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: Internet
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY1PR0801MB2153
+
+
+--Apple-Mail=_7CF474ED-489D-45CA-B4F1-1BC63F024AD6
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain;
+	charset=us-ascii
+
+Hi Gigja,
+
+Yes, you can use the figure, make sure to reference our LPSC abstract as =
+this is taken from the poster we presented.=20
+Also here is a simple video that I made to demonstrate the resonance:
+https://www.youtube.com/watch?v=3DWjFdKFbMrAY =
+<https://www.youtube.com/watch?v=3DWjFdKFbMrAY>
+
+
+
+
+Good luck,
+Raluca
+
+
+
+Raluca Rufu
+Postdoctoral Researcher=20
+Southwest Research Institute- Boulder, CO
+Office Phone: 303-226-0879
+
+
+
+
+
+--Apple-Mail=_7CF474ED-489D-45CA-B4F1-1BC63F024AD6
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/html;
+	charset=us-ascii
+
+<html><head><meta http-equiv=3D"Content-Type" content=3D"text/html; =
+charset=3Dus-ascii"></head><body style=3D"word-wrap: break-word; =
+-webkit-nbsp-mode: space; line-break: after-white-space;" class=3D"">Hi =
+Gigja,<div class=3D""><br class=3D""></div><div class=3D"">Yes, you can =
+use the figure, make sure to reference our LPSC abstract as this is =
+taken from the poster we presented.&nbsp;</div><div class=3D"">Also here =
+is a simple video that I made to demonstrate the resonance:</div><div =
+class=3D""><a href=3D"https://www.youtube.com/watch?v=3DWjFdKFbMrAY" =
+class=3D"">https://www.youtube.com/watch?v=3DWjFdKFbMrAY</a></div><div =
+class=3D""><br class=3D""></div><div class=3D""><br class=3D""></div><div =
+class=3D""><br class=3D""></div><div class=3D""><br class=3D""></div><div =
+class=3D"">Good luck,</div><div class=3D"">Raluca</div><br class=3D""><br =
+class=3D""><div class=3D"">
+<div style=3D"caret-color: rgb(0, 0, 0); color: rgb(0, 0, 0); =
+font-family: Helvetica; font-size: 12px; font-style: normal; =
+font-variant-caps: normal; font-weight: normal; letter-spacing: normal; =
+orphans: auto; text-align: start; text-indent: 0px; text-transform: =
+none; white-space: normal; widows: auto; word-spacing: 0px; =
+-webkit-text-size-adjust: auto; -webkit-text-stroke-width: 0px; =
+text-decoration: none;"><div><i style=3D"font-family: &quot;Times New =
+Roman&quot;, serif; font-size: 12pt;" class=3D""><span style=3D"font-size:=
+ 13.5pt; font-family: Calibri, sans-serif; color: gray;" class=3D""><br =
+class=3D"Apple-interchange-newline">Raluca =
+Rufu</span></i></div><div><div style=3D"font-size: 12pt; margin: 0cm 0cm =
+0.0001pt; font-family: &quot;Times New Roman&quot;, serif;" =
+class=3D""><o:p class=3D""></o:p></div><div style=3D"font-size: 12pt; =
+margin: 0cm 0cm 0.0001pt; font-family: &quot;Times New Roman&quot;, =
+serif;" class=3D""><i class=3D""><span style=3D"font-size: 10pt; =
+font-family: Calibri, sans-serif; color: gray;" class=3D"">Postdoctoral =
+Researcher&nbsp;</span></i><o:p class=3D""></o:p></div><div =
+style=3D"margin: 0cm 0cm 0.0001pt; font-family: &quot;Times New =
+Roman&quot;, serif;" class=3D""><i class=3D""><span style=3D"font-family: =
+Calibri, sans-serif; color: gray;" class=3D"">Southwest Research =
+Institute-&nbsp;</span></i><i class=3D""><span style=3D"font-family: =
+Calibri, sans-serif; color: gray;" class=3D"">Boulder, =
+CO</span></i></div><div style=3D"margin: 0cm 0cm 0.0001pt; font-family: =
+&quot;Times New Roman&quot;, serif;" class=3D""><i class=3D""><span =
+style=3D"font-family: Calibri, sans-serif; color: gray;" class=3D"">Office=
+ Phone: 303-226-0879</span></i></div><div class=3D""><i class=3D""><span =
+style=3D"font-family: Calibri, sans-serif; color: gray;" class=3D""><br =
+class=3D""></span></i></div></div></div><div style=3D"caret-color: =
+rgb(0, 0, 0); color: rgb(0, 0, 0); font-family: Helvetica; font-size: =
+12px; font-style: normal; font-variant-caps: normal; font-weight: =
+normal; letter-spacing: normal; orphans: auto; text-align: start; =
+text-indent: 0px; text-transform: none; white-space: normal; widows: =
+auto; word-spacing: 0px; -webkit-text-size-adjust: auto; =
+-webkit-text-stroke-width: 0px; text-decoration: none;"><div =
+style=3D"margin: 0cm 0cm 0.0001pt; font-family: &quot;Times New =
+Roman&quot;, serif;" class=3D""><br class=3D""></div></div><br =
+class=3D"Apple-interchange-newline">
+</div>
+<br class=3D""></body></html>=
+
+--Apple-Mail=_7CF474ED-489D-45CA-B4F1-1BC63F024AD6--
