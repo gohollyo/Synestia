@@ -28,8 +28,7 @@ Once you have downloaded Python, Jupyter, REBOUND, and these notebooks onto your
 `jupyter notebook`
 
 ## What's to Come
-In the Jupyter notebooks, you are guided through the various dynamics and attributes of synestias, mainly via interactive figures.
-0. <b>Introduction</b> (this notebook)
+In the Jupyter notebooks, you are guided through the various dynamics and attributes of synestias, mainly via interactive figures.  
 1. <b>What are Synestias? How Were Synestias Discovered?</b> (Giant Impact Origin of the Moon)
 2. <b>Physical Properties of Synestias</b> (Temperature, Pressure, Density, Gravity)
 3. <b>What Determines Whether a Planetary Structure is a Synestia?</b> (Corotation Limit)
