@@ -11,6 +11,8 @@ The goal of this particular set of Jupyter Notebooks is to help people at the un
 Simulations in this paper made use of the REBOUND code which is freely available at [GitHub](http://github.com/hannorein/rebound) ([Rein & Liu, 2012](https://www.aanda.org/articles/aa/abs/2012/01/aa18085-11/aa18085-11.html)). REBOUND is an open-source software that computes force interactions (gravity in particular) among spherical particles (can represent stars, planets, moons, ring or dust particles). It is efficient and easy to customize. The integrator in the simulations is IAS15, which uses an adaptive time step ([Rein & Spiegel, 2015](https://academic.oup.com/mnras/article/446/2/1424/2892331)).
 
 ## Setting up These Jupyter Notebooks on Your Computer
+To launch these notebooks and run them in a web browser via Binder, click [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/gohollyo/Synestia/master)
+
 In order to use these Jupyter Notebooks on your own computer, you will need Python, Jupyter, and REBOUND.
 
 The easiest way to download both Jupyter and Python in one go is by downloading the [Anaconda distribution](https://www.anaconda.com/products/individual). Go to the link, scroll to the bottom of the webpage, and click on an installer according to your computer's operating system. Follow the installation instructions provided on the download webpage.
